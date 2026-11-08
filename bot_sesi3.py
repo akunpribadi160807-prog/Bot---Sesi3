@@ -77,4 +77,58 @@ def callback(call):
         bot.send_message(call.message.chat.id,
             "💰 **LIST HARGA PANEL**\n\n"
             "• 1GB - Rp 2.000\n"
-            "• 2GB - Rp 3.000
+            "• 2GB - Rp 3.000\n"
+            "• 3GB - Rp 4.000\n"
+            "• 4GB - Rp 5.000\n"
+            "• 5GB - Rp 6.000\n"
+            "• 6GB - Rp 7.000\n"
+            "• 7GB - Rp 8.000\n"
+            "• 8GB - Rp 9.000\n"
+            "• 9GB - Rp 10.000\n"
+            "• 10GB - Rp 11.000\n"
+            "• UNLIMITED - Rp 13.000\n\n"
+            "🛡️ Garansi Full 15 Hari\n"
+            "⚡ Aktif 24 Jam Otomatis\n"
+            "✅ Amanah & Terpercaya",
+            parse_mode="Markdown",
+            reply_markup=main_menu_2col())
+
+    elif call.data == "payment":
+        bot.send_message(call.message.chat.id,
+            "🧾 **PAYMENT**\n\n"
+            "• DANA\n"
+            "• GOPAY\n"
+            "• OVO\n"
+            "• QRIS\n\n"
+            "Chat OWNER dulu untuk dapetin nomor payment ya bosku!",
+            reply_markup=main_menu_2col())
+
+    elif call.data == "cara":
+        bot.send_message(call.message.chat.id,
+            "📝 **CARA ORDER**\n\n"
+            "1. Pilih panel yang mau dibeli di List Harga\n"
+            "2. Chat OWNER / CS\n"
+            "3. Transfer ke payment yang dikasih\n"
+            "4. Kirim bukti TF\n"
+            "5. Panel langsung dibuatin, gak pake lama!\n\n"
+            "Gampang kan? 🔥",
+            reply_markup=main_menu_2col())
+
+    elif call.data == "owner":
+        bot.send_message(call.message.chat.id,
+            f"👑 **OWNER / CS**\n\n"
+            f"Chat langsung: {OWNER_USERNAME}\n"
+            f"Fast respon, amanah 100% ✅\n"
+            f"Jangan sungkan tanya-tanya dulu ya bosku!",
+            reply_markup=main_menu_2col())
+
+    elif call.data == "testi":
+        bot.send_message(call.message.chat.id,
+            "📣 **TESTIMONI & BUKTI**\n\n"
+            "Ribuan customer udah order di ZUAN PANEL.\n"
+            "Testi lengkap bisa cek ke OWNER ya bosku!\n\n"
+            "Dijamin aman, garansi full!",
+            reply_markup=main_menu_2col())
+
+print("Bot jalan...")
+bot.infinity_polling()

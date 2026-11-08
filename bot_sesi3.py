@@ -1,163 +1,93 @@
 import os
 import telebot
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN") or ""
 bot = telebot.TeleBot(TOKEN)
 
 OWNER_USERNAME = "@ShanXPLD"
-OWNER_WA = "083169944241"
 
-user_order = {}
+WELCOME_CAPTION = """✨ ━━━━━━━━━━━━━━━━━━━ ✨
+      ZUAN PANEL
+   Auto Order Panel
+✨ ━━━━━━━━━━━━━━━━━━━ ✨
 
-PRODUK = {
-    "Admin Panel": 3000,
-    "Panel Pterodactyl": 2000,
-    "Panel Pterodactyl Legal": 5000,
-    "Reseller Panel": 10000,
-    "Reseller Panel Legal": 13000,
-    "Panel 1GB": 2000, "Panel 2GB": 3000, "Panel 3GB": 4000,
-    "Panel 4GB": 5000, "Panel 5GB": 6000, "Panel 6GB": 7000,
-    "Panel 7GB": 8000, "Panel 8GB": 9000, "Panel 9GB": 10000,
-    "Panel 10GB": 11000, "Panel UNLIMITED": 13000,
-}
+👋 Halo, Selamat Datang Bosku!
 
-def format_rp(n):
-    return f"Rp {n:,}".replace(",", ".")
+Terima kasih sudah mampir ke toko kami.
+Di sini semua serba OTOMATIS, tanpa antri,
+tanpa drama nunggu admin.
 
-# INI KUNCINYA BANG: ReplyKeyboard, 1 tombol = 1 baris = FULL 1 KOTAK
-def kb_utama():
-    kb = ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add(KeyboardButton("🟢 Menu Layanan"))
-    kb.add(KeyboardButton("🔵 Install Panel Free"))
-    kb.add(KeyboardButton("🔴 Owner Bot"))
-    kb.add(KeyboardButton("🟢 Channel Testi"))
-    kb.add(KeyboardButton("🔵 Channel Info"))
-    return kb
+⚡ AKTIF 24 JAM
+🛡️ GARANSI FULL 15 HARI
+📦 STOK SELALU UPDATE
+⚡ FAST RESPON
+✅ AMANAH & TERPERCAYA
+👑 PREMIUM QUALITY
 
-def kb_layanan():
-    kb = ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add(KeyboardButton("🔵 Admin Panel"))
-    kb.add(KeyboardButton("🔵 Panel Pterodactyl"))
-    kb.add(KeyboardButton("🔵 Panel Pterodactyl Legal"))
-    kb.add(KeyboardButton("🔵 Reseller Panel"))
-    kb.add(KeyboardButton("🔵 Reseller Panel Legal"))
-    kb.add(KeyboardButton("🟢 Panel 1GB - 10GB / UNLI"))
-    kb.add(KeyboardButton("🔴 ⬅ Kembali"))
-    return kb
+👇 Silakan pilih menu di bawah ini:"""
 
-def kb_panel():
-    kb = ReplyKeyboardMarkup(resize_keyboard=True)
-    for nama in ["Panel 1GB","Panel 2GB","Panel 3GB","Panel 4GB","Panel 5GB","Panel 6GB","Panel 7GB","Panel 8GB","Panel 9GB","Panel 10GB","Panel UNLIMITED"]:
-        kb.add(KeyboardButton(f"🔵 {nama}"))
-    kb.add(KeyboardButton("🔴 ⬅ Kembali"))
-    return kb
+def main_menu():
+    m = InlineKeyboardMarkup(row_width=2)
+    m.add(
+        InlineKeyboardButton("🔵 📦 CEK STOK", callback_data="stok"),
+        InlineKeyboardButton("🟢 💰 LIST HARGA", callback_data="harga"),
+        InlineKeyboardButton("🟡 🧾 PAYMENT", callback_data="payment"),
+        InlineKeyboardButton("🟠 📝 CARA ORDER", callback_data="cara"),
+        InlineKeyboardButton("🔴 👑 OWNER / CS", callback_data="owner"),
+        InlineKeyboardButton("🟣 📣 TESTIMONI", callback_data="testi"),
+    )
+    return m
 
-def kb_bayar():
-    kb = ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add(KeyboardButton("🟢 Bayar QRIS"))
-    kb.add(KeyboardButton("🔵 Bayar Saldo Bot"))
-    kb.add(KeyboardButton("🔴 Batal"))
-    return kb
-
-def kb_batal():
-    kb = ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add(KeyboardButton("🔴 Batal Order"))
-    return kb
-
-WELCOME_TEXT = """🌟 ━━━━ [ WELCOME ] ━━━━ 🌟
-👑 PROFIL BOT
-👤 Owner : ZUAN PANEL
-📛 Name : AUTO ORDER ZUAN PANEL
-⚡ Status : BETA - VIP Only
-📌 Prefix : /
-
-📊 STATISTIK
-👥 Total User : 481
-💰 Pendapatan : Rp 2.438.400
-
-[ 👋 ] Demm Bro, Welcome To Bot AUTO ORDER ZUAN PANEL!"""
+def back_menu():
+    m = InlineKeyboardMarkup()
+    m.add(InlineKeyboardButton("⬜ 🔙 KEMBALI KE MENU", callback_data="back"))
+    return m
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    user_order.pop(message.chat.id, None)
     try:
         with open("banner.jpg", "rb") as photo:
-            bot.send_photo(message.chat.id, photo, caption=WELCOME_TEXT, reply_markup=kb_utama())
-    except:
-        bot.send_message(message.chat.id, WELCOME_TEXT, reply_markup=kb_utama())
+            bot.send_photo(message.chat.id, photo, caption=WELCOME_CAPTION, reply_markup=main_menu())
+    except FileNotFoundError:
+        bot.send_message(message.chat.id, WELCOME_CAPTION, reply_markup=main_menu())
 
-@bot.message_handler(func=lambda m: True)
-def semua_chat(message):
-    cid = message.chat.id
-    text = message.text.strip() if message.text else ""
-    # Bersihin emoji biar gampang dibaca
-    bersih = text.replace("🟢 ","").replace("🔵 ","").replace("🔴 ","").replace("⬅ ","").strip()
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    try:
+        if call.data == "back":
+            try:
+                bot.delete_message(call.message.chat.id, call.message.message_id)
+            except:
+                pass
+            with open("banner.jpg", "rb") as photo:
+                bot.send_photo(call.message.chat.id, photo, caption=WELCOME_CAPTION, reply_markup=main_menu())
+            return
 
-    # LAGI NGETIK USERNAME?
-    order = user_order.get(cid)
-    if order and order.get("step") == "username":
-        if bersih in ["Batal Order", "Batal", "Kembali"]:
-            user_order.pop(cid, None)
-            bot.send_message(cid, "❌ Order dibatalkan!", reply_markup=kb_utama())
-            return
-        username = text.strip()
-        if len(username) < 5:
-            bot.send_message(cid, f"❌ Kependekan bosku! '{username}' cuma {len(username)} huruf.\nMinimal 5-9 huruf! Contoh: PanelZuan", reply_markup=kb_batal())
-            return
-        if len(username) > 9:
-            bot.send_message(cid, f"❌ Kepanjangan bosku! '{username}' udah {len(username)} huruf.\nMaksimal 9 huruf! Contoh: PanelZuan", reply_markup=kb_batal())
-            return
-        if " " in username:
-            bot.send_message(cid, "❌ Username gak boleh ada spasi! Contoh: PanelZuan", reply_markup=kb_batal())
-            return
-        order["username"] = username
-        order["step"] = "bayar"
-        bot.send_message(cid, f"💳 PILIH METODE PEMBAYARAN\n\n🛍️ Item : {order['produk']} ({username})\n💰 Total : {format_rp(order['harga'])}\n💰 Saldo Bot kamu : Rp 0", reply_markup=kb_bayar())
-        return
+        texts = {
+            "stok": "📦 **CEK STOK PANEL**\n\n✅ 1GB - 10GB : READY\n✅ UNLIMITED : READY\n\nStok selalu update 24 jam! 🔥",
+            "harga": "💰 **LIST HARGA PANEL**\n\n• 1GB - Rp 2.000\n• 2GB - Rp 3.000\n• 3GB - Rp 4.000\n• 4GB - Rp 5.000\n• 5GB - Rp 6.000\n• 6GB - Rp 7.000\n• 7GB - Rp 8.000\n• 8GB - Rp 9.000\n• 9GB - Rp 10.000\n• 10GB - Rp 11.000\n• UNLIMITED - Rp 13.000\n\n🛡️ Garansi Full 15 Hari",
+            "payment": "🧾 **PAYMENT**\n\n• DANA\n• GOPAY\n• OVO\n• QRIS\n\nChat OWNER dulu untuk nomor payment ya bosku!",
+            "cara": "📝 **CARA ORDER**\n\n1. Pilih panel di List Harga\n2. Chat OWNER / CS\n3. Transfer\n4. Kirim bukti TF\n5. Panel langsung dibuatin!",
+            "owner": f"👑 **OWNER / CS**\n\nChat langsung: {OWNER_USERNAME}\nFast respon, amanah 100% ✅",
+            "testi": "📣 **TESTIMONI & BUKTI**\n\nRibuan customer udah order di ZUAN PANEL.\nTesti lengkap cek ke OWNER ya bosku!\nDijamin aman, garansi full!",
+        }
 
-    if bersih == "Menu Layanan":
-        bot.send_message(cid, "🛍️ ━━━ DAFTAR MENU LAYANAN BOT ━━━ 🛍️\n\nSilahkan Pilih Produk Yang Ingin Anda Order.", reply_markup=kb_layanan())
-    elif bersih == "Panel 1GB - 10GB / UNLI":
-        bot.send_message(cid, "💰 LIST HARGA PANEL\nPilih panel yang mau dibeli bosku!", reply_markup=kb_panel())
-    elif bersih == "Install Panel Free":
-        bot.send_message(cid, "🎁 INSTALL PANEL FREE\n\nChat OWNER dulu ya bosku!\nSyarat: Follow Channel dulu!", reply_markup=kb_utama())
-    elif bersih == "Owner Bot":
-        bot.send_message(cid, f"📞 ━━━ CONTACT OWNER BOT ━━━\n\n👤 Name : ZUAN PANEL\n📱 Whatsapp : {OWNER_WA}\n✈️ Telegram : {OWNER_USERNAME}", reply_markup=kb_utama())
-    elif bersih == "Channel Testi":
-        bot.send_message(cid, "📣 Channel Testi: https://t.me/ZUANPANEL", reply_markup=kb_utama())
-    elif bersih == "Channel Info":
-        bot.send_message(cid, "📣 Channel Info: https://t.me/ZUANPANEL", reply_markup=kb_utama())
-    elif bersih == "Kembali":
-        bot.send_message(cid, "Balik ke menu utama!", reply_markup=kb_utama())
-    elif bersih == "Batal" or bersih == "Batal Order":
-        user_order.pop(cid, None)
-        bot.send_message(cid, "❌ Order dibatalkan!", reply_markup=kb_utama())
-    elif bersih == "Bayar QRIS":
-        if not order:
-            bot.send_message(cid, "Order tidak ditemukan, /start lagi ya!", reply_markup=kb_utama())
-            return
-        bot.send_message(cid, f"📱 BAYAR VIA QRIS\n\nItem : {order['produk']} ({order.get('username','')})\nTotal : {format_rp(order['harga'])}\n\nChat OWNER untuk dapetin QRIS: {OWNER_USERNAME}", reply_markup=kb_utama())
-    elif bersih == "Bayar Saldo Bot":
-        bot.send_message(cid, "💳 Saldo Bot kamu : Rp 0\nSaldo kurang! Topup dulu ke OWNER ya!", reply_markup=kb_utama())
-    elif bersih in PRODUK or bersih.replace("Panel ","Panel ") in PRODUK:
-        # Cari nama produk yang bener
-        nama_produk = None
-        for k in PRODUK:
-            if k in text or k == bersih:
-                nama_produk = k
-                break
-        if not nama_produk:
-            # Coba cocokin tanpa emoji
-            for k in PRODUK:
-                if bersih == k:
-                    nama_produk = k
-        if nama_produk:
-            user_order[cid] = {"produk": nama_produk, "harga": PRODUK[nama_produk], "step": "username"}
-            bot.send_message(cid, f"🛒 BELI {nama_produk.upper()}\n\nHarga : {format_rp(PRODUK[nama_produk])}\n\n✏️ Silahkan Kirim Username Untuk Panel Yang Ingin Kamu Beli Dengan Minimal 5-9 Huruf.\n\nContoh : PanelZuan, ZuanStore", reply_markup=kb_batal())
-    else:
-        # Kalo ketik sembarangan, biarin aja, jangan spam
-        pass
+        text = texts.get(call.data, "Menu tidak ditemukan")
+        try:
+            if call.message.photo:
+                bot.edit_message_caption(text, call.message.chat.id, call.message.message_id, parse_mode="Markdown", reply_markup=back_menu())
+            else:
+                bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode="Markdown", reply_markup=back_menu())
+        except:
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=back_menu())
 
-print("Bot ZUAN ReplyKeyboard ala WANZZ jalan...")
+        bot.answer_callback_query(call.id)
+
+    except Exception as e:
+        print(e)
+        bot.answer_callback_query(call.id, "Coba lagi bosku!")
+
+print("Bot jalan...")
 bot.infinity_polling()

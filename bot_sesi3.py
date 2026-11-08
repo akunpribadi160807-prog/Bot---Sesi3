@@ -17,7 +17,6 @@ PRODUK = {
     "pterodactyl": {"nama": "Panel Pterodactyl", "harga": 6000, "desc": "Panel 1GB - 10GB"},
     "pterodactyl_legal": {"nama": "Panel Pterodactyl Legal", "harga": 10000, "desc": "Panel Legal Garansi Full"},
     "reseller": {"nama": "Reseller Panel", "harga": 15000, "desc": "Akses Reseller Panel"},
-    # INI YANG GUE GANTI BANG! TADI 13RB, SEKARANG 20RB!
     "reseller_legal": {"nama": "Reseller Panel Legal", "harga": 20000, "desc": "Akses Reseller Panel Legal"},
     "1gb": {"nama": "Panel 1GB", "harga": 6000},
     "2gb": {"nama": "Panel 2GB", "harga": 8000},
@@ -88,15 +87,20 @@ def menu_kembali():
     m.add(InlineKeyboardButton("🟢 ⬅ Kembali", callback_data="back"))
     return m
 
-WELCOME_TEXT = """🌟 ━━━━ [ WELCOME ] ━━━━ 🌟
-👑 PROFIL BOT
-👤 Owner : ZUAN PANEL
-📛 Name : AUTO ORDER ZUAN PANEL
-⚡ Status : BETA - VIP Only
+# INI KUNCINYA BANG! WELCOME PERSIS KAYA WANZZ YANG LU LINGKARIN!
+WELCOME_TEXT = """🌟 ✦ ━━━━ 『 WELCOME 』 ━━━━ ✦ 🌟
 
-📊 STATISTIK
-👥 Total User : 481
-💰 Pendapatan : Rp 2.438.400
+┌─ PROFIL BOT
+│ 👤 Owner · ZUAN PANEL
+│ 🤖 Name · AUTO ORDER ZUAN PANEL
+│ ⚡ Status · BETA · VIP Only
+│ ⌨️ Prefix · /
+└──────────────
+
+┌─ 📊 STATISTIK
+│ 👥 Total User · 481
+│ 💰 Pendapatan · Rp 2.438.400
+└──────────────
 
 [ 👋 ] Demm Bro, Welcome To Bot AUTO ORDER ZUAN PANEL!"""
 

@@ -87,31 +87,31 @@ def menu_kembali():
     m.add(InlineKeyboardButton("🟢 ⬅ Kembali", callback_data="back"))
     return m
 
-# INI KUNCINYA BANG! WELCOME PERSIS KAYA WANZZ YANG LU LINGKARIN!
+# INI KUNCINYA BANG! PAKE <blockquote> BIAR GARIS PINK NYA MUNCUL!
 WELCOME_TEXT = """🌟 ✦ ━━━━ 『 WELCOME 』 ━━━━ ✦ 🌟
 
-┌─ PROFIL BOT
-│ 👤 Owner · ZUAN PANEL
-│ 🤖 Name · AUTO ORDER ZUAN PANEL
-│ ⚡ Status · BETA · VIP Only
-│ ⌨️ Prefix · /
-└──────────────
+<blockquote>┌─ PROFIL BOT
+👤 Owner · ZUAN PANEL
+🤖 Name · AUTO ORDER ZUAN PANEL
+⚡ Status · BETA · VIP Only
+⌨️ Prefix · /
+└──────────────</blockquote>
 
-┌─ 📊 STATISTIK
-│ 👥 Total User · 481
-│ 💰 Pendapatan · Rp 2.438.400
-└──────────────
+<blockquote>┌─ 📊 STATISTIK
+👥 Total User · 481
+💰 Pendapatan · Rp 2.438.400
+└──────────────</blockquote>
 
-[ 👋 ] Demm Bro, Welcome To Bot AUTO ORDER ZUAN PANEL!"""
+<blockquote>[ 👋 ] Demm Bro, Welcome To Bot AUTO ORDER ZUAN PANEL!</blockquote>"""
 
 @bot.message_handler(commands=['start'])
 def start(message):
     user_order.pop(message.chat.id, None)
     try:
         with open("banner.jpg", "rb") as photo:
-            bot.send_photo(message.chat.id, photo, caption=WELCOME_TEXT, reply_markup=menu_utama())
+            bot.send_photo(message.chat.id, photo, caption=WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
     except:
-        bot.send_message(message.chat.id, WELCOME_TEXT, reply_markup=menu_utama())
+        bot.send_message(message.chat.id, WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
@@ -122,11 +122,11 @@ def callback(call):
     def edit(text, markup):
         try:
             if call.message.photo or call.message.caption:
-                bot.edit_message_caption(text, cid, mid, reply_markup=markup)
+                bot.edit_message_caption(text, cid, mid, parse_mode="HTML", reply_markup=markup)
             else:
-                bot.edit_message_text(text, cid, mid, reply_markup=markup)
+                bot.edit_message_text(text, cid, mid, parse_mode="HTML", reply_markup=markup)
         except:
-            bot.send_message(cid, text, reply_markup=markup)
+            bot.send_message(cid, text, parse_mode="HTML", reply_markup=markup)
     bot.answer_callback_query(call.id)
 
     if data == "back":
@@ -134,9 +134,9 @@ def callback(call):
         except: pass
         try:
             with open("banner.jpg", "rb") as photo:
-                bot.send_photo(cid, photo, caption=WELCOME_TEXT, reply_markup=menu_utama())
+                bot.send_photo(cid, photo, caption=WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
         except:
-            bot.send_message(cid, WELCOME_TEXT, reply_markup=menu_utama())
+            bot.send_message(cid, WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
         return
 
     if data == "menu_layanan":

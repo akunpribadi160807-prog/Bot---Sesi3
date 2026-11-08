@@ -1,101 +1,178 @@
-import json, os
+import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
-# Token diambil dari Render, bukan dari sini, biar aman
-TOKEN = os.getenv("TOKEN", "GANTI_TOKEN_BOT_KE3_LU_DISINI")
-OWNER_USERNAME = "ShanxPLD"
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-FILE = "data_sesi3.json"
+# ============ TEKS MENU BARU - UDAH DIP OLES ============
 
-if os.path.exists(FILE):
-    with open(FILE) as f: DATA = json.load(f)
-else:
-    DATA = {
-        "dana": "0838xxxx",
-        "gopay": "0838xxxx",
-        "qris_nama": "ZUAN PANEL",
-        "stok": {"1GB": 15, "2GB": 8, "UNLIMITED": 5},
-        "harga": {"1GB": 2000, "2GB": 4000, "3GB": 6000, "4GB": 8000, "5GB": 9000, "UNLIMITED": 10000}
-    }
+START_TEXT = """
+✨ ═══════════════════ ✨
+   ZUAN PANEL - BOT KE-3
+✨ ═══════════════════ ✨
 
-def save():
-    with open(FILE, "w") as f: json.dump(DATA, f)
+👋 Halo, Selamat Datang Bosku!
 
-def is_owner(update):
-    return update.effective_user.username and update.effective_user.username.lower() == OWNER_USERNAME.lower()
+Terima kasih sudah mampir ke toko kami.
+Di sini semua serba OTOMATIS, tanpa antri, tanpa drama nunggu admin.
 
-def menu_utama():
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton("📦 CEK STOK", callback_data="stok")],
-        [InlineKeyboardButton("💰 LIST HARGA", callback_data="harga")],
-        [InlineKeyboardButton("💳 PAYMENT / BAYAR", callback_data="payment")],
-        [InlineKeyboardButton("🛒 CARA ORDER", callback_data="order")],
-        [InlineKeyboardButton("👤 OWNER / CS", callback_data="owner")],
-    ])
+⚡ AKTIF 24 JAM
+💰 MULAI Rp 2.000 AJA
+🛡️ GARANSI FULL 15 HARI
+📦 STOK SELALU UPDATE
 
-def tombol_balik():
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🔙 KEMBALI KE MENU", callback_data="menu")]])
+👇 Silakan pilih menu di bawah ini:
+"""
+
+STOK_TEXT = """
+📦 ═══ INFO STOK TERBARU ═══ 📦
+
+🟢 PANEL 1GB : 15 Stok
+🟢 PANEL 2GB : 11 Stok
+🟢 PANEL 3GB : 9 Stok
+🟢 PANEL 4GB : 7 Stok
+🟢 PANEL 5GB : 5 Stok
+🟢 UNLIMITED : 5 Stok
+
+✅ Stok ready, langsung gas!
+Jangan sampai kehabisan, stok menipis tiap hari.
+"""
+
+HARGA_TEXT = """
+💰 ═══ LIST HARGA ZUAN PANEL ═══ 💰
+
+🥉 1GB — Rp 2.000
+🥈 2GB — Rp 4.000
+🥇 3GB — Rp 6.000
+💎 4GB — Rp 8.000
+👑 5GB — Rp 9.000
+🔥 UNLIMITED — Rp 10.000
+
+✨ Semua paket sudah termasuk:
+- Garansi 15 Hari
+- Full Akses Admin
+- Free Req Username
+
+Mau yang mana bosku? 👇
+"""
+
+PAYMENT_TEXT = """
+🧾 ═══ PAYMENT ZUAN PANEL ═══ 🧾
+
+Silakan transfer ke salah satu di bawah ini:
+
+💙 DANA
+0858-7225-7850
+a/n MUHAMAD IKHSANDI AKBAR
+
+💚 GOPAY
+0858-7225-7850
+a/n MUHAMAD IKHSANDI AKBAR
+
+📷 QRIS
+(Kirim QRIS, scan langsung)
+
+⚠️ WAJIB:
+Setelah bayar, kirim bukti TF ke OWNER
+dengan format: #ORDER - Nama - Paket
+
+Orderan akan diproses 1-5 menit.
+"""
+
+ORDER_TEXT = """
+📝 ═══ CARA ORDER ═══ 📝
+
+Gampang banget, 3 langkah doang:
+
+1️⃣ Pilih paket di LIST HARGA
+2️⃣ Bayar ke PAYMENT
+3️⃣ Kirim bukti ke OWNER / CS
+
+Contoh format:
+#ORDER - Budi - 1GB
+
+Langsung klik tombol OWNER di bawah ya bosku!
+"""
+
+OWNER_TEXT = """
+👑 ═══ OWNER / CS ═══ 👑
+
+Butuh bantuan? Chat langsung owner kami:
+
+👤 Owner: @ShanxPLD
+⏰ Fast Respon 07.00 - 23.00 WIB
+
+Jangan sungkan, tanya-tanya dulu juga boleh!
+"""
+
+TESTI_TEXT = """
+📢 ═══ TESTIMONI ZUAN PANEL ═══ 📢
+
+⭐⭐⭐⭐⭐
+"Order jam 2 pagi masih dilayani bot, 1 menit langsung aktif! Mantap!" - Rizky
+
+⭐⭐⭐⭐⭐
+"Udah 3x order di sini, gak pernah gagal. Garansi beneran di claim!" - Andi
+
+⭐⭐⭐⭐⭐
+"Harga paling murah se-Telegram, adminnya ramah banget!" - Fajar
+
+Mau jadi testimoni selanjutnya?
+Langsung order sekarang! 👇
+"""
+
+# ============ TOMBOL MENU ============
+
+MAIN_KEYBOARD = [
+    [InlineKeyboardButton("📦  CEK STOK PANEL", callback_data="stok")],
+    [InlineKeyboardButton("💰  LIST HARGA", callback_data="harga"),
+     InlineKeyboardButton("🧾  PAYMENT", callback_data="payment")],
+    [InlineKeyboardButton("📝  CARA ORDER", callback_data="order"),
+     InlineKeyboardButton("👑  OWNER / CS", callback_data="owner")],
+    [InlineKeyboardButton("📢  TESTIMONI & BUKTI", callback_data="testi")],
+]
+
+BACK_KEYBOARD = [
+    [InlineKeyboardButton("⬅️  KEMBALI KE MENU", callback_data="start")],
+    [InlineKeyboardButton("🛒  LANGSUNG ORDER", callback_data="owner")],
+]
+
+OWNER_KEYBOARD = [
+    [InlineKeyboardButton("💬  CHAT OWNER SEKARANG", url="https://t.me/ShanxPLD")],
+    [InlineKeyboardButton("⬅️  KEMBALI KE MENU", callback_data="start")],
+]
+
+# ============ HANDLER ============
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 HALO! SELAMAT DATANG DI\n⚡ ZUAN PANEL - BOT KE-3 ⚡\n\nPanel murah, aman, garansi full!\nPencet tombol di bawah ya bang 👇", reply_markup=menu_utama())
+    await update.message.reply_text(START_TEXT, reply_markup=InlineKeyboardMarkup(MAIN_KEYBOARD))
 
-async def tombol(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    if query.data == "menu":
-        await query.edit_message_text("👋 BALIK KE MENU UTAMA\n\nPilih lagi bang 👇", reply_markup=menu_utama())
-    elif query.data == "stok":
-        teks = "☁️ INFO STOK PANEL ☁️\n\n"
-        for k,v in DATA["stok"].items():
-            teks += f"⚡ PANEL {k}\n- Sisa : {v} stok\n- Harga : Rp {DATA['harga'].get(k,0):,}\n\n"
-        await query.edit_message_text(teks, reply_markup=tombol_balik())
-    elif query.data == "harga":
-        teks = "💰 LIST HARGA ZUAN PANEL 💰\n\n"
-        for k,v in DATA["harga"].items():
-            teks += f"{k} : Rp {v:,}\n"
-        teks += "\nSemua garansi 15 hari!"
-        await query.edit_message_text(teks, reply_markup=tombol_balik())
-    elif query.data == "payment":
-        teks = f"💳 PAYMENT ZUAN PANEL 💳\n\n📱 DANA : {DATA['dana']}\n📱 GOPAY : {DATA['gopay']}\n📷 QRIS : A.N {DATA['qris_nama']}\n\n⚠️ Transfer sesuai harga, screenshot bukti, terus pencet tombol bawah!"
-        kb = [[InlineKeyboardButton("✅ UDAH TRANSFER, KIRIM BUKTI", url=f"https://t.me/{OWNER_USERNAME}")],[InlineKeyboardButton("🔙 KEMBALI KE MENU", callback_data="menu")]]
-        await query.edit_message_text(teks, reply_markup=InlineKeyboardMarkup(kb))
-    elif query.data == "order":
-        await query.edit_message_text("🛒 CARA ORDER 🛒\n\n1. Pilih paket\n2. Pencet PAYMENT, transfer dulu\n3. Screenshot bukti\n4. Pencet UDAH TRANSFER\n5. Panel langsung dikirim!", reply_markup=tombol_balik())
-    elif query.data == "owner":
-        await query.edit_message_text(f"👤 OWNER / CS\n\nChat langsung:\n@{OWNER_USERNAME}\n\nFast respon 24 jam!", reply_markup=tombol_balik())
+    data = query.data
 
-async def setdana(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_owner(update): return
-    if not context.args: await update.message.reply_text("Cara: /setdana 0838xxxx"); return
-    DATA["dana"] = context.args[0]; save()
-    await update.message.reply_text(f"✅ DANA diubah jadi: {DATA['dana']}")
-async def setgopay(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_owner(update): return
-    if not context.args: await update.message.reply_text("Cara: /setgopay 0838xxxx"); return
-    DATA["gopay"] = context.args[0]; save()
-    await update.message.reply_text(f"✅ GOPAY diubah jadi: {DATA['gopay']}")
-async def setstok(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_owner(update): return
-    if len(context.args) < 2: await update.message.reply_text("Cara: /setstok 1GB 20"); return
-    DATA["stok"][context.args[0].upper()] = int(context.args[1]); save()
-    await update.message.reply_text(f"✅ Stok {context.args[0].upper()} jadi {context.args[1]}")
-async def setharga(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_owner(update): return
-    if len(context.args) < 2: await update.message.reply_text("Cara: /setharga 1GB 2000"); return
-    DATA["harga"][context.args[0].upper()] = int(context.args[1]); save()
-    await update.message.reply_text(f"✅ Harga {context.args[0].upper()} jadi Rp {int(context.args[1]):,}")
-async def help_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_owner(update): return
-    await update.message.reply_text("🔧 PERINTAH OWNER:\n\n/setdana 0838xxxx\n/setgopay 0838xxxx\n/setstok 1GB 20\n/setharga 1GB 2500")
+    if data == "start":
+        await query.edit_message_text(START_TEXT, reply_markup=InlineKeyboardMarkup(MAIN_KEYBOARD))
+    elif data == "stok":
+        await query.edit_message_text(STOK_TEXT, reply_markup=InlineKeyboardMarkup(BACK_KEYBOARD))
+    elif data == "harga":
+        await query.edit_message_text(HARGA_TEXT, reply_markup=InlineKeyboardMarkup(BACK_KEYBOARD))
+    elif data == "payment":
+        await query.edit_message_text(PAYMENT_TEXT, reply_markup=InlineKeyboardMarkup(BACK_KEYBOARD))
+    elif data == "order":
+        await query.edit_message_text(ORDER_TEXT, reply_markup=InlineKeyboardMarkup(BACK_KEYBOARD))
+    elif data == "owner":
+        await query.edit_message_text(OWNER_TEXT, reply_markup=InlineKeyboardMarkup(OWNER_KEYBOARD))
+    elif data == "testi":
+        await query.edit_message_text(TESTI_TEXT, reply_markup=InlineKeyboardMarkup(BACK_KEYBOARD))
 
-app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("admin", help_admin))
-app.add_handler(CommandHandler("setdana", setdana))
-app.add_handler(CommandHandler("setgopay", setgopay))
-app.add_handler(CommandHandler("setstok", setstok))
-app.add_handler(CommandHandler("setharga", setharga))
-app.add_handler(CallbackQueryHandler(tombol))
-print("Bot Sesi 3 jalan di Hosting...")
-app.run_polling()
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button))
+    print("Bot ZUAN PANEL jalan...")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()

@@ -13,22 +13,23 @@ CHANNEL_INFO = "https://t.me/ZUANPANEL"
 user_order = {}
 
 PRODUK = {
-    "admin": {"nama": "Admin Panel", "harga": 3000, "desc": "Akun Root Admin (Full Akses)"},
-    "pterodactyl": {"nama": "Panel Pterodactyl", "harga": 2000, "desc": "Panel 1GB - 10GB"},
-    "pterodactyl_legal": {"nama": "Panel Pterodactyl Legal", "harga": 5000, "desc": "Panel Legal Garansi Full"},
-    "reseller": {"nama": "Reseller Panel", "harga": 10000, "desc": "Akses Reseller Panel"},
-    "reseller_legal": {"nama": "Reseller Panel Legal", "harga": 13000, "desc": "Akses Reseller Panel Legal"},
-    "1gb": {"nama": "Panel 1GB", "harga": 2000},
-    "2gb": {"nama": "Panel 2GB", "harga": 3000},
-    "3gb": {"nama": "Panel 3GB", "harga": 4000},
-    "4gb": {"nama": "Panel 4GB", "harga": 5000},
-    "5gb": {"nama": "Panel 5GB", "harga": 6000},
-    "6gb": {"nama": "Panel 6GB", "harga": 7000},
-    "7gb": {"nama": "Panel 7GB", "harga": 8000},
-    "8gb": {"nama": "Panel 8GB", "harga": 9000},
-    "9gb": {"nama": "Panel 9GB", "harga": 10000},
-    "10gb": {"nama": "Panel 10GB", "harga": 11000},
-    "unli": {"nama": "Panel UNLIMITED", "harga": 13000},
+    "admin": {"nama": "Admin Panel", "harga": 10000, "desc": "Akun Root Admin (Full Akses)"},
+    "pterodactyl": {"nama": "Panel Pterodactyl", "harga": 6000, "desc": "Panel 1GB - 10GB"},
+    "pterodactyl_legal": {"nama": "Panel Pterodactyl Legal", "harga": 10000, "desc": "Panel Legal Garansi Full"},
+    "reseller": {"nama": "Reseller Panel", "harga": 15000, "desc": "Akses Reseller Panel"},
+    # INI YANG GUE GANTI BANG! TADI 13RB, SEKARANG 20RB!
+    "reseller_legal": {"nama": "Reseller Panel Legal", "harga": 20000, "desc": "Akses Reseller Panel Legal"},
+    "1gb": {"nama": "Panel 1GB", "harga": 6000},
+    "2gb": {"nama": "Panel 2GB", "harga": 8000},
+    "3gb": {"nama": "Panel 3GB", "harga": 10000},
+    "4gb": {"nama": "Panel 4GB", "harga": 12000},
+    "5gb": {"nama": "Panel 5GB", "harga": 14000},
+    "6gb": {"nama": "Panel 6GB", "harga": 16000},
+    "7gb": {"nama": "Panel 7GB", "harga": 18000},
+    "8gb": {"nama": "Panel 8GB", "harga": 20000},
+    "9gb": {"nama": "Panel 9GB", "harga": 22000},
+    "10gb": {"nama": "Panel 10GB", "harga": 24000},
+    "unli": {"nama": "Panel UNLIMITED", "harga": 30000},
 }
 
 def format_rp(n):
@@ -45,7 +46,7 @@ def menu_utama():
 
 def menu_layanan():
     m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🔵 Admin Panel - Rp 3.000", callback_data="beli_admin"))
+    m.add(InlineKeyboardButton("🔵 Admin Panel - Rp 10.000", callback_data="beli_admin"))
     m.add(InlineKeyboardButton("🔵 Panel Pterodactyl", callback_data="beli_pterodactyl"))
     m.add(InlineKeyboardButton("🔵 Panel Pterodactyl Legal", callback_data="beli_pterodactyl_legal"))
     m.add(InlineKeyboardButton("🔵 Reseller Panel", callback_data="beli_reseller"))
@@ -56,17 +57,17 @@ def menu_layanan():
 
 def list_panel():
     m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🔵 1GB - Rp 2.000", callback_data="beli_1gb"))
-    m.add(InlineKeyboardButton("🔵 2GB - Rp 3.000", callback_data="beli_2gb"))
-    m.add(InlineKeyboardButton("🔵 3GB - Rp 4.000", callback_data="beli_3gb"))
-    m.add(InlineKeyboardButton("🔵 4GB - Rp 5.000", callback_data="beli_4gb"))
-    m.add(InlineKeyboardButton("🔵 5GB - Rp 6.000", callback_data="beli_5gb"))
-    m.add(InlineKeyboardButton("🔵 6GB - Rp 7.000", callback_data="beli_6gb"))
-    m.add(InlineKeyboardButton("🔵 7GB - Rp 8.000", callback_data="beli_7gb"))
-    m.add(InlineKeyboardButton("🔵 8GB - Rp 9.000", callback_data="beli_8gb"))
-    m.add(InlineKeyboardButton("🔵 9GB - Rp 10.000", callback_data="beli_9gb"))
-    m.add(InlineKeyboardButton("🔵 10GB - Rp 11.000", callback_data="beli_10gb"))
-    m.add(InlineKeyboardButton("🔵 UNLIMITED - Rp 13.000", callback_data="beli_unli"))
+    m.add(InlineKeyboardButton("🔵 1GB - Rp 6.000", callback_data="beli_1gb"))
+    m.add(InlineKeyboardButton("🔵 2GB - Rp 8.000", callback_data="beli_2gb"))
+    m.add(InlineKeyboardButton("🔵 3GB - Rp 10.000", callback_data="beli_3gb"))
+    m.add(InlineKeyboardButton("🔵 4GB - Rp 12.000", callback_data="beli_4gb"))
+    m.add(InlineKeyboardButton("🔵 5GB - Rp 14.000", callback_data="beli_5gb"))
+    m.add(InlineKeyboardButton("🔵 6GB - Rp 16.000", callback_data="beli_6gb"))
+    m.add(InlineKeyboardButton("🔵 7GB - Rp 18.000", callback_data="beli_7gb"))
+    m.add(InlineKeyboardButton("🔵 8GB - Rp 20.000", callback_data="beli_8gb"))
+    m.add(InlineKeyboardButton("🔵 9GB - Rp 22.000", callback_data="beli_9gb"))
+    m.add(InlineKeyboardButton("🔵 10GB - Rp 24.000", callback_data="beli_10gb"))
+    m.add(InlineKeyboardButton("🔵 UNLIMITED - Rp 30.000", callback_data="beli_unli"))
     m.add(InlineKeyboardButton("🔴 ⬅ Kembali", callback_data="menu_layanan"))
     return m
 
@@ -92,7 +93,6 @@ WELCOME_TEXT = """🌟 ━━━━ [ WELCOME ] ━━━━ 🌟
 👤 Owner : ZUAN PANEL
 📛 Name : AUTO ORDER ZUAN PANEL
 ⚡ Status : BETA - VIP Only
-📌 Prefix : /
 
 📊 STATISTIK
 👥 Total User : 481
@@ -161,7 +161,6 @@ def callback(call):
         if key in PRODUK:
             p = PRODUK[key]
             user_order[cid] = {"produk": p["nama"], "harga": p["harga"], "step": "username"}
-            # INI YANG GUE UBAH BANG: 5-9 HURUF
             edit(f"🛒 BELI {p['nama'].upper()}\n\nHarga : {format_rp(p['harga'])}\nBenefit : {p.get('desc','Panel Premium')}\n\n✏️ Silahkan Kirim Username Untuk Panel Yang Ingin Kamu Beli Dengan Minimal 5-9 Huruf.\n\nContoh : PanelZuan, ZuanStore, ZuanPanel", menu_batal())
             return
 
@@ -186,7 +185,6 @@ def tangkap_username(message):
         return
     username = message.text.strip()
 
-    # VALIDASI BARU: 5-9 HURUF
     if len(username) < 5:
         bot.send_message(cid, f"❌ Kependekan bosku! Username '{username}' cuma {len(username)} huruf.\n\nMinimal 5 huruf ya! Contoh: PanelZuan\nKirim lagi...")
         return

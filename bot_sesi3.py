@@ -2,9 +2,9 @@ import json, os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
-
+# Token diambil dari Render, bukan dari sini, biar aman
 TOKEN = os.getenv("TOKEN", "GANTI_TOKEN_BOT_KE3_LU_DISINI")
-OWNER_USERNAME = "ShanXPLD"
+OWNER_USERNAME = "ShanxPLD"
 
 FILE = "data_sesi3.json"
 

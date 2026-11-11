@@ -157,16 +157,15 @@ def teks_welcome(uid=None):
     )
 
 def edit_pesan(c, teks, markup=None):
+    chat_id = c.message.chat.id
     try:
-        if c.message.photo or c.message.caption:
-            bot.edit_message_caption(caption=teks, chat_id=c.message.chat.id, message_id=c.message.message_id, reply_markup=markup, parse_mode="HTML")
-        else:
-            bot.edit_message_text(teks, chat_id=c.message.chat.id, message_id=c.message.message_id, reply_markup=markup, parse_mode="HTML")
+        bot.delete_message(chat_id, c.message.message_id)
     except:
-        try:
-            bot.send_message(c.message.chat.id, teks, reply_markup=markup, parse_mode="HTML")
-        except:
-            pass
+        pass
+    try:
+        bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
+    except Exception as e:
+        print("Edit Pesan Error:", e)
 
 @bot.message_handler(commands=['start'])
 def start(m):

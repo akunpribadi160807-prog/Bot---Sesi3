@@ -178,7 +178,8 @@ def start(m):
         except:
             continue
     bot.send_message(m.chat.id, teks_welcome(m.chat.id), reply_markup=menu_awal(m.chat.id), parse_mode="HTML")
-    def proses_topup_custom(m):
+    
+def proses_topup_custom(m):
     chat_id = m.chat.id
     try:
         nominal = int(m.text.strip().replace(".", "").replace(",", "").replace("Rp", "").replace(" ", ""))

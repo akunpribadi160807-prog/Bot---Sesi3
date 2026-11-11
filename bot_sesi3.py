@@ -41,7 +41,6 @@ HARGA = {
 }
 orders = {}
 
-# ================= SALDO =================
 def load_saldo():
     try:
         with open("saldo.json", "r") as f:
@@ -70,7 +69,7 @@ def kurang_saldo(uid, nominal):
     save_saldo()
 
 topup_orders = {}
-# ================= BANNER MODEL TOKOSHOPP =================
+# ================= BANNER TOKOSHOPP =================
 def bikin_gambar_qris(qr_string, d, judul_total="TOTAL PEMBAYARAN"):
     try:
         qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=5&data={urllib.parse.quote(qr_string)}"
@@ -123,7 +122,7 @@ def bikin_gambar_qris(qr_string, d, judul_total="TOTAL PEMBAYARAN"):
         bb = draw.textbbox((0, 0), nominal, font=f_total)
         draw.text((990 - (bb[2]-bb[0]) - 250, 990), nominal, fill=(255, 255, 255), font=f_total)
         draw.rectangle([740, 1080, 990, 1140], fill=(255, 200, 0))
-        draw.text((750, 1090), "⚠️ WAJIB BAYAR", fill=(0, 0, 0), font=f_kecil)
+        draw.text((750, 1090), "WAJIB BAYAR", fill=(0, 0, 0), font=f_kecil)
         draw.text((750, 1112), "SESUAI NOMINAL", fill=(0, 0, 0), font=f_kecil)
         draw.text((15, 1095), d['nama'].upper(), fill=(0, 0, 0), font=f_med)
         draw.text((15, 1122), f"Username: {d.get('username','-')}", fill=(60, 60, 60), font=f_kecil)
@@ -149,23 +148,12 @@ def menu_awal(uid=None):
 def teks_welcome(uid=None):
     saldo = get_saldo(uid) if uid else 0
     return (
-        "🌟✦ ━━━━ 『 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 』 ━━━━ ✦🌟\n\n"
-        "<blockquote>┌── 「 👤 𝐏𝐑𝐎𝐅𝐈𝐋 𝐁𝐎𝐓 」 ──\n"
-        "│ 👑 Owner · <b>ZUAN PANEL</b>\n"
-        "│ 🤖 Name · <b>AUTO ORDER ZUAN PANEL</b>\n"
-        "│ ⚡ Status · <b>BETA · VIP Only</b>\n"
-        "│ 📖 Prefix · <b>/</b>\n"
-        "└──────────────</blockquote>\n\n"
-        "<blockquote>┌── 「 👛 𝐒𝐀𝐋𝐃𝐎 𝐀𝐍𝐃𝐀 」 ──\n"
-        f"│ 💰 Saldo · <b>Rp {saldo:,}</b>\n"
-        "│ 💳 Top Up · <b>QRIS Otomatis</b>\n"
-        "└──────────────</blockquote>\n\n"
-        "<blockquote>┌── 「 📊 𝐒𝐓𝐀𝐓𝐈𝐒𝐓𝐈𝐊 」 ──\n"
-        "│ 👥 Total User · <b>481</b>\n"
-        "│ 💰 Pendapatan · <b>Rp 2.438.400</b>\n"
-        "│ 🔥 Stok · <b>READY ALL</b>\n"
-        "└──────────────</blockquote>\n\n"
-        "<blockquote>👋 <b>Selamat Datang di Bot AUTO ORDER ZUAN PANEL!</b></blockquote>"
+        "🌟✦ ━━━━ WELCOME ━━━━ ✦🌟\n\n"
+        f"👛 Saldo Anda : Rp {saldo:,}\n"
+        "👑 Owner : ZUAN PANEL\n"
+        "🤖 Name : AUTO ORDER ZUAN PANEL\n"
+        "⚡ Status : BETA - VIP Only\n\n"
+        "👋 Selamat Datang di Bot AUTO ORDER ZUAN PANEL!"
     )
 
 def edit_pesan(c, teks, markup=None):
@@ -189,116 +177,9 @@ def start(m):
                 return
         except:
             continue
-    bot.send_message(m.chat.id, teks_welcome(m.chat.id), reply_markup=menu_awal(m.chat.id), parse_mode="HTML")@bot.callback_query_handler(func=lambda c: True)
-def semua_callback(c):
-    chat_id = c.message.chat.id
-    data = c.data
-    bot.answer_callback_query(c.id)
-
-    if data == "menu_layanan":
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("📦  CEK STOK", callback_data="zuan_stok"))
-        m.add(InlineKeyboardButton("💰  LIST HARGA", callback_data="zuan_harga"))
-        m.add(InlineKeyboardButton("🛒  ORDER PANEL", callback_data="zuan_order"))
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="back_home"))
-        edit_pesan(c, "✨ <b>MENU LAYANAN ZUAN PANEL</b> ✨\n\n<blockquote>Silahkan pilih layanan yang Anda butuhkan 👇</blockquote>", m)
-
-    elif data == "back_home":
-        try: bot.delete_message(chat_id, c.message.message_id)
-        except: pass
-        start(c.message)
-
-    elif data == "cek_saldo":
-        saldo = get_saldo(chat_id)
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("💰  ISI SALDO +", callback_data="isi_saldo"))
-        m.add(InlineKeyboardButton("🛒  BELANJA PAKE SALDO", callback_data="zuan_order"))
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="back_home"))
-        edit_pesan(c, f"👛 <b>SALDO SAYA</b>\n\n<blockquote>┌── 「 💰 SALDO 」 ──\n│ 👤 User : <b>@{c.from_user.username or '-'}</b>\n│ 💰 Saldo : <b>Rp {saldo:,}</b>\n│ ⚡ Status : <b>Aktif</b>\n└──────────────</blockquote>\n\n<i>Saldo bisa dipake buat beli panel tanpa scan QR lagi!</i>", m)
-
-    elif data == "isi_saldo":
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("💰 10K", callback_data="topup_10000"), InlineKeyboardButton("💰 20K", callback_data="topup_20000"))
-        m.add(InlineKeyboardButton("💰 30K", callback_data="topup_30000"), InlineKeyboardButton("💰 50K", callback_data="topup_50000"))
-        m.add(InlineKeyboardButton("💰 100K", callback_data="topup_100000"), InlineKeyboardButton("💰 200K", callback_data="topup_200000"))
-        m.add(InlineKeyboardButton("✏️  NOMINAL LAIN", callback_data="topup_custom"))
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="back_home"))
-        edit_pesan(c, f"💰 <b>ISI SALDO ZUAN PANEL</b>\n\n<blockquote>👛 Saldo Sekarang : <b>Rp {get_saldo(chat_id):,}</b>\n💳 Metode : <b>QRIS Otomatis</b>\n⚡ Masuk : <b>Otomatis 1 Menit</b></blockquote>\n\n<i>Silahkan pilih nominal top up 👇</i>", m)
-
-    elif data == "topup_custom":
-        bot.send_message(chat_id, "✏️ <b>ISI SALDO CUSTOM</b>\n\nSilahkan kirim nominal yang mau di isi:\n<i>Contoh: <code>25000</code>\nMinimal Rp 5.000, Maksimal Rp 1.000.000</i>", parse_mode="HTML")
-        bot.register_next_step_handler(c.message, proses_topup_custom)
-
-    elif data.startswith("topup_"):
-        try:
-            nominal = int(data.replace("topup_", ""))
-        except:
-            return
-        topup_orders[chat_id] = {"nama": f"Top Up Saldo Rp {nominal:,}", "harga": nominal, "username": c.from_user.username or "user", "tipe": "topup"}
-        buat_qris_topup(c, nominal)
-
-    elif data == "cek_bayar_topup":
-        cek_bayar_topup(c)
-
-    elif data == "bayar_pake_saldo":
-        bayar_pake_saldo(c)
-
-    elif data == "install_free":
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="back_home"))
-        edit_pesan(c, "💎 <b>INSTALL PANEL FREE</b>\n\n<blockquote>┌── 「 📋 SYARAT 」 ──\n│ 1️⃣ Join Channel Testi\n│ 2️⃣ Screenshot Bot ini &amp; kirim ke Owner\n│ 3️⃣ Menunggu proses dari Admin\n└──────────────</blockquote>", m)
-
-    elif data == "owner":
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("📞  HUBUNGI OWNER", url="https://t.me/ZuanPanel"))
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="back_home"))
-        edit_pesan(c, "👑 <b>OWNER BOT</b>\n\n<blockquote>┌── 「 OWNER 」 ──\n│ 👑 Owner : <b>ZUAN PANEL</b>\n│ ⚡ Respon : <b>FAST 24 JAM</b>\n│ 🛡️ Garansi : <b>15 HARI FULL</b>\n└──────────────</blockquote>", m)
-
-    elif data == "zuan_stok":
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("🛒  ORDER SEKARANG", callback_data="zuan_order"))
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="menu_layanan"))
-        edit_pesan(c, "📦 <b>STOK PANEL ZUAN</b>\n\n<blockquote>┌── 「 ✅ READY 」 ──\n│ 💚 1GB - 10GB · <b>TERSEDIA</b>\n│ 🔥 UNLI · <b>TERSEDIA</b>\n└──────────────</blockquote>", m)
-
-    elif data == "zuan_harga":
-        teks = ("💰 <b>DAFTAR HARGA ZUAN PANEL</b> 💰\n━━━━━━━━━━━━━━━━━━\n\n"
-            "<blockquote>💚 <b>PAKET RAM</b>\n"
-            "├ 1GB  ─ Rp <b>4.000</b>\n├ 2GB  ─ Rp <b>6.000</b>\n├ 3GB  ─ Rp <b>8.000</b>\n├ 4GB  ─ Rp <b>10.000</b>\n├ 5GB  ─ Rp <b>12.000</b>\n├ 6GB  ─ Rp <b>15.000</b>\n├ 7GB  ─ Rp <b>18.000</b>\n├ 8GB  ─ Rp <b>20.000</b>\n├ 9GB  ─ Rp <b>22.000</b>\n└ 10GB ─ Rp <b>25.000</b></blockquote>\n\n"
-            "<blockquote>🔥 <b>UNLIMITED</b>\n└ UNLI ─ Rp <b>30.000</b> 👑</blockquote>\n\n"
-            "💳 <b>QRIS</b> • 👛 <b>Bisa Pake Saldo</b> • 🛡️ <b>Garansi 15 Hari</b>")
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("🛒  ORDER SEKARANG 🚀", callback_data="zuan_order"))
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="menu_layanan"))
-        edit_pesan(c, teks, m)
-
-    elif data == "zuan_order":
-        m = InlineKeyboardMarkup()
-        m.add(InlineKeyboardButton("💚 1GB · 4K", callback_data="buy_1gb"), InlineKeyboardButton("💚 2GB · 6K", callback_data="buy_2gb"))
-        m.add(InlineKeyboardButton("💙 3GB · 8K", callback_data="buy_3gb"), InlineKeyboardButton("💙 4GB · 10K", callback_data="buy_4gb"))
-        m.add(InlineKeyboardButton("💜 5GB · 12K", callback_data="buy_5gb"), InlineKeyboardButton("💜 6GB · 15K", callback_data="buy_6gb"))
-        m.add(InlineKeyboardButton("🧡 7GB · 18K", callback_data="buy_7gb"), InlineKeyboardButton("🧡 8GB · 20K", callback_data="buy_8gb"))
-        m.add(InlineKeyboardButton("❤️ 9GB · 22K", callback_data="buy_9gb"), InlineKeyboardButton("❤️ 10GB · 25K", callback_data="buy_10gb"))
-        m.add(InlineKeyboardButton("🔥  UNLI · 30K  👑", callback_data="buy_unli"))
-        m.add(InlineKeyboardButton("🔙  KEMBALI", callback_data="menu_layanan"))
-        edit_pesan(c, f"🛒 <b>PILIH PAKET ANDA</b>\n\n<blockquote>👛 Saldo Anda : <b>Rp {get_saldo(chat_id):,}</b>\n💎 Kualitas Premium\n⚡ Aktivasi Cepat\n🛡️ Garansi 15 Hari</blockquote>", m)
-
-    elif data.startswith("buy_"):
-        key = data.replace("buy_", "")
-        item = HARGA[key]
-        orders[chat_id] = {"paket": key, "nama": item['nama'], "harga": item['harga']}
-        bot.send_message(chat_id, f"✨ <b>PEMESANAN {item['nama'].upper()}</b>\n━━━━━━━━━━━━━━━━━━\n\n<blockquote>📦 Paket : <b>{item['nama']}</b>\n💰 Harga : <b>Rp {item['harga']:,}</b>\n👛 Saldo Anda : <b>Rp {get_saldo(chat_id):,}</b></blockquote>\n\n<b>LANGKAH 1/2</b> ─ Silahkan kirim <b>Username Panel</b> Anda:\n<i>Contoh: <code>zuan123</code></i>", parse_mode="HTML")
-        bot.register_next_step_handler(c.message, proses_username)
-
-    elif data == "buat_qris":
-        buat_qris(c)
-    elif data == "cek_bayar":
-        cek_bayar(c)
-    elif data == "batalkan":
-        orders.pop(chat_id, None)
-        bot.send_message(chat_id, "❌ <b>Pesanan Dibatalkan.</b>", parse_mode="HTML")
-        
+    bot.send_message(m.chat.id, teks_welcome(m.chat.id), reply_markup=menu_awal(m.chat.id), parse_mode="HTML")
     def proses_topup_custom(m):
-        chat_id = m.chat.id
+    chat_id = m.chat.id
     try:
         nominal = int(m.text.strip().replace(".", "").replace(",", "").replace("Rp", "").replace(" ", ""))
     except:
@@ -321,11 +202,11 @@ def proses_username(m):
     chat_id = m.chat.id
     username = m.text.strip().lower().replace(" ", "")
     if len(username) < 4:
-        bot.send_message(chat_id, "❌ <b>Username tidak valid.</b>\nMohon gunakan minimal 4 karakter.", parse_mode="HTML")
+        bot.send_message(chat_id, "❌ <b>Username tidak valid.</b>\nMinimal 4 karakter.", parse_mode="HTML")
         bot.register_next_step_handler(m, proses_username)
         return
     orders[chat_id]["username"] = username
-    bot.send_message(chat_id, f"✅ <b>Username Berhasil Disimpan</b>\n\n<blockquote>👤 Username : <code>{username}</code></blockquote>\n\n<b>LANGKAH 2/2</b> ─ Silahkan kirim <b>Email</b> Anda:\n<i>Contoh: <code>zuan@gmail.com</code></i>", parse_mode="HTML")
+    bot.send_message(chat_id, f"✅ <b>Username Disimpan</b>\n\nUsername : <code>{username}</code>\n\n<b>LANGKAH 2/2</b> - Kirim <b>Email</b>:\nContoh: <code>zuan@gmail.com</code>", parse_mode="HTML")
     bot.register_next_step_handler(m, proses_email)
 
 def proses_email(m):
@@ -338,102 +219,116 @@ def proses_email(m):
     orders[chat_id]["email"] = email
     d = orders[chat_id]
     saldo = get_saldo(chat_id)
-    teks = ("📋 <b>KONFIRMASI PESANAN</b>\n━━━━━━━━━━━━━━━━━━\n\n<blockquote>"
+    teks = ("📋 <b>KONFIRMASI PESANAN</b>\n\n"
         f"📦 Paket : <b>{d['nama']}</b>\n"
         f"👤 Username : <code>{d['username']}</code>\n"
         f"📧 Email : <code>{d['email']}</code>\n"
         f"💰 Total : <b>Rp {d['harga']:,}</b>\n"
-        f"👛 Saldo Anda : <b>Rp {saldo:,}</b>\n"
-        f"💳 Metode : <b>QRIS RESMI / SALDO</b>\n"
-        "</blockquote>\n\nPilih metode pembayaran 👇")
+        f"👛 Saldo Anda : <b>Rp {saldo:,}</b>\n\nPilih metode pembayaran 👇")
     markup = InlineKeyboardMarkup()
     if saldo >= d['harga']:
-        markup.add(InlineKeyboardButton(f"👛  BAYAR PAKAI SALDO (Rp {saldo:,}) ✅", callback_data="bayar_pake_saldo"))
+        markup.add(InlineKeyboardButton(f"👛  BAYAR PAKAI SALDO (Rp {saldo:,})", callback_data="bayar_pake_saldo"))
     else:
         markup.add(InlineKeyboardButton(f"👛  SALDO KURANG (Rp {saldo:,}) - ISI SALDO", callback_data="isi_saldo"))
-    markup.add(InlineKeyboardButton("💳  BAYAR PAKAI QRIS 💳", callback_data="buat_qris"))
+    markup.add(InlineKeyboardButton("💳  BAYAR PAKAI QRIS", callback_data="buat_qris"))
     bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
 
 def bayar_pake_saldo(c):
     chat_id = c.message.chat.id
     d = orders.get(chat_id)
-    if not d: return
+    if not d:
+        return
     saldo = get_saldo(chat_id)
     if saldo < d['harga']:
-        bot.send_message(chat_id, f"❌ <b>Saldo Tidak Cukup!</b>\n\n<blockquote>Saldo Anda : <b>Rp {saldo:,}</b>\nHarga : <b>Rp {d['harga']:,}</b>\nKurang : <b>Rp {d['harga']-saldo:,}</b></blockquote>\n\nSilahkan isi saldo dulu!", parse_mode="HTML")
+        bot.send_message(chat_id, f"❌ <b>Saldo Tidak Cukup!</b>\n\nSaldo : <b>Rp {saldo:,}</b>\nHarga : <b>Rp {d['harga']:,}</b>", parse_mode="HTML")
         return
     kurang_saldo(chat_id, d['harga'])
     sisa = get_saldo(chat_id)
-    bot.send_message(chat_id, f"✅ <b>PEMBAYARAN BERHASIL PAKAI SALDO!</b> 🎉\n\n<blockquote>📦 Paket : <b>{d['nama']}</b>\n👤 Username : <code>{d['username']}</code>\n💰 Dibayar : <b>Rp {d['harga']:,}</b>\n👛 Sisa Saldo : <b>Rp {sisa:,}</b></blockquote>\n\n<i>Pesanan sedang disiapkan Admin.</i>\n\n<i>— ZUAN PANEL —</i>", parse_mode="HTML")
+    bot.send_message(chat_id, f"✅ <b>PEMBAYARAN BERHASIL PAKAI SALDO!</b>\n\nPaket : <b>{d['nama']}</b>\nUsername : <code>{d['username']}</code>\nDibayar : <b>Rp {d['harga']:,}</b>\nSisa Saldo : <b>Rp {sisa:,}</b>\n\nPesanan sedang disiapkan Admin.", parse_mode="HTML")
     try:
-        bot.send_message(ADMIN_ID, f"💰 *PESANAN LUNAS VIA SALDO*\n\nUser: @{c.from_user.username} (ID: {chat_id})\nPaket: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\nSisa Saldo: Rp {sisa:,}")
-    except: pass
-
+        bot.send_message(ADMIN_ID, f"💰 PESANAN LUNAS VIA SALDO\nUser: @{c.from_user.username} (ID: {chat_id})\nPaket: {d['nama']}\nUsername: {d['username']}\nEmail: {d['email']}\nTotal: Rp {d['harga']:,}\nSisa Saldo: Rp {sisa:,}")
+    except:
+        pass
+        # ================= TOP UP QRIS =================
 def buat_qris_topup(c, nominal):
     chat_id = c.message.chat.id
     d = topup_orders.get(chat_id)
-    if not d: return
-    bot.send_message(chat_id, f"⏳ <b>Mohon Tunggu...</b>\n<i>Sedang menyiapkan kode top up sebesar Rp {nominal:,} untuk Anda.</i>", parse_mode="HTML")
+    if not d:
+        return
+    bot.send_message(chat_id, f"⏳ <b>Mohon Tunggu...</b>\nMenyiapkan top up Rp {nominal:,}", parse_mode="HTML")
     try:
         headers = {"Authorization": f"Bearer {KASERA_API_KEY}", "Content-Type": "application/json"}
         ext_id = f"TOPUP-{chat_id}-{int(time.time())}"
-        payload = {"amount": nominal, "description": f"TOPUP SALDO ZUAN - {nominal}", "external_id": ext_id, "payment_methods": ["qris"], "expires_in_minutes": 60}
+        payload = {"amount": nominal, "description": f"TOPUP SALDO ZUAN - {nominal} - {d.get('username')}", "external_id": ext_id, "payment_methods": ["qris"], "expires_in_minutes": 60}
         headers["Idempotency-Key"] = ext_id
         r = requests.post(f"{KASERA_BASE}/transactions", json=payload, headers=headers, timeout=20)
         res = r.json()
-        if r.status_code not in [200, 201]: raise Exception(f"Kasera {r.status_code}: {res}")
+        if r.status_code not in [200, 201]:
+            raise Exception(f"Kasera {r.status_code}: {res}")
         data = res.get("data") or res
         tx_id = data.get("id") or data.get("transaction_id") or ext_id
         payment = data.get("payment") or {}
         qr_string = payment.get("qr_string") or payment.get("qr_code") or data.get("qr_string")
-        if not qr_string: raise Exception("Kasera tidak kirim QR")
-        d["tx_id"] = tx_id; d["external_id"] = ext_id; d["qr_string"] = qr_string
+        if not qr_string:
+            raise Exception("Kasera tidak kirim QR")
+        d["tx_id"] = tx_id
+        d["external_id"] = ext_id
+        d["qr_string"] = qr_string
     except Exception as e:
         print("Kasera Topup Error:", e)
-        bot.send_message(chat_id, "❌ <b>Gagal Membuat Pembayaran Top Up.</b>\nCoba lagi nanti.", parse_mode="HTML")
+        bot.send_message(chat_id, "❌ <b>Gagal Membuat Top Up.</b>\nCoba lagi nanti.", parse_mode="HTML")
         return
     gambar = bikin_gambar_qris(d["qr_string"], d, judul_total="TOP UP SALDO")
-    teks = ("💰 <b>ZUAN PANEL — ISI SALDO</b> 💰\n━━━━━━━━━━━━━━━━━━\n\n<blockquote>"
-        f"👛 Top Up : <b>Rp {d['harga']:,}</b>\n👤 User : <code>{d.get('username')}</code>\n🧾 Invoice : <code>{d.get('external_id')}</code>\n</blockquote>\n\n"
-        "✅ <b>INI QRIS ASLI &amp; RESMI!</b>\n<blockquote>QR ini diterbitkan langsung oleh <b>Kasera Pay</b> &amp; terverifikasi <b>Bank Indonesia</b>.</blockquote>\n\n"
-        "📱 <b>Silahkan Scan QR di Atas</b>\n1️⃣ Buka DANA / OVO / GoPay / M-Banking\n2️⃣ Scan QRIS &amp; pastikan nama <b>MUHAMAD IKHSANDI AKBAR</b>\n3️⃣ Pastikan nominal sesuai, lalu konfirmasi\n\n⏰ <i>QR ini berlaku 60 menit.</i>\n🛡️ <i>Saldo Masuk Otomatis Setelah Bayar</i>")
+    teks = (f"💰 <b>ISI SALDO ZUAN PANEL</b>\n\nTop Up : <b>Rp {d['harga']:,}</b>\nUser : <code>{d.get('username')}</code>\nInvoice : <code>{d.get('external_id')}</code>\n\nScan QR di atas pake DANA / OVO / GoPay / M-Banking\nPastikan nama MUHAMAD IKHSANDI AKBAR\n\nQR berlaku 60 menit.")
     markup = InlineKeyboardMarkup()
     markup.add(InlineKeyboardButton("🔍  SAYA SUDAH BAYAR ✅", callback_data="cek_bayar_topup"))
     try:
-        if gambar: bot.send_photo(chat_id, gambar, caption=teks, parse_mode="HTML", reply_markup=markup)
+        if gambar:
+            bot.send_photo(chat_id, gambar, caption=teks, parse_mode="HTML", reply_markup=markup)
         else:
             qr_img_url = f"https://api.qrserver.com/v1/create-qr-code/?size=600x600&data={urllib.parse.quote(d['qr_string'])}"
             bot.send_photo(chat_id, qr_img_url, caption=teks, parse_mode="HTML", reply_markup=markup)
-    except: bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
+    except:
+        bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
 
 def cek_bayar_topup(c):
     chat_id = c.message.chat.id
     d = topup_orders.get(chat_id)
-    if not d: return
-    try: bot.answer_callback_query(c.id, "Memeriksa pembayaran...")
-    except: pass
+    if not d:
+        return
+    try:
+        bot.answer_callback_query(c.id, "Memeriksa pembayaran...")
+    except:
+        pass
     lunas = False
     try:
         headers = {"Authorization": f"Bearer {KASERA_API_KEY}"}
         tx_id = d.get("tx_id") or d.get("external_id")
         r = requests.get(f"{KASERA_BASE}/transactions/{tx_id}", headers=headers, timeout=15)
-        j = r.json(); data = j.get("data") or j
-        if str(data.get("status", "")).lower() == "succeeded": lunas = True
-    except Exception as e: print("Cek Topup Error:", e)
+        j = r.json()
+        data = j.get("data") or j
+        if str(data.get("status", "")).lower() == "succeeded":
+            lunas = True
+    except Exception as e:
+        print("Cek Topup Error:", e)
     if not lunas:
-        bot.send_message(chat_id, "❌ <b>Pembayaran Belum Diterima.</b>\n\n<blockquote>Mohon selesaikan pembayaran dulu, tunggu 1 menit, lalu tekan tombol <b>Saya Sudah Bayar</b> kembali.</blockquote>", parse_mode="HTML")
+        bot.send_message(chat_id, "❌ <b>Pembayaran Belum Diterima.</b>\nSelesaikan bayar dulu, tunggu 1 menit, lalu pencet lagi.", parse_mode="HTML")
         return
     tambah_saldo(chat_id, d['harga'])
     saldo_baru = get_saldo(chat_id)
-    bot.send_message(chat_id, f"✅ <b>ISI SALDO BERHASIL!</b> 🎉\n\n<blockquote>💰 Top Up : <b>Rp {d['harga']:,}</b>\n👛 Saldo Sekarang : <b>Rp {saldo_baru:,}</b></blockquote>\n\n<i>Saldo sudah bisa dipake buat belanja panel!</i>", parse_mode="HTML")
-    try: bot.send_message(ADMIN_ID, f"💰 *TOP UP LUNAS*\nUser: @{c.from_user.username} (ID: {chat_id})\nNominal: Rp {d['harga']:,}\nSaldo Baru: Rp {saldo_baru:,}")
-    except: pass
+    bot.send_message(chat_id, f"✅ <b>ISI SALDO BERHASIL!</b>\n\nTop Up : <b>Rp {d['harga']:,}</b>\nSaldo Sekarang : <b>Rp {saldo_baru:,}</b>", parse_mode="HTML")
+    try:
+        bot.send_message(ADMIN_ID, f"💰 TOP UP LUNAS\nUser: @{c.from_user.username} (ID: {chat_id})\nNominal: Rp {d['harga']:,}\nSaldo Baru: Rp {saldo_baru:,}")
+    except:
+        pass
 
+# ================= QRIS ORDER PANEL =================
 def buat_qris(c):
     chat_id = c.message.chat.id
     d = orders.get(chat_id)
-    if not d: return
-    bot.send_message(chat_id, f"⏳ <b>Mohon Tunggu...</b>\n<i>Sedang menyiapkan kode pembayaran resmi sebesar Rp {d['harga']:,} untuk Anda.</i>", parse_mode="HTML")
+    if not d:
+        return
+    bot.send_message(chat_id, f"⏳ <b>Mohon Tunggu...</b>\nMenyiapkan pembayaran Rp {d['harga']:,}", parse_mode="HTML")
     try:
         headers = {"Authorization": f"Bearer {KASERA_API_KEY}", "Content-Type": "application/json"}
         ext_id = f"ZUAN-{chat_id}-{int(time.time())}"
@@ -441,53 +336,66 @@ def buat_qris(c):
         headers["Idempotency-Key"] = ext_id
         r = requests.post(f"{KASERA_BASE}/transactions", json=payload, headers=headers, timeout=20)
         res = r.json()
-        if r.status_code not in [200, 201]: raise Exception(f"Kasera {r.status_code}: {res}")
+        if r.status_code not in [200, 201]:
+            raise Exception(f"Kasera {r.status_code}: {res}")
         data = res.get("data") or res
         tx_id = data.get("id") or data.get("transaction_id") or ext_id
         payment = data.get("payment") or {}
         qr_string = payment.get("qr_string") or payment.get("qr_code") or data.get("qr_string")
-        if not qr_string: raise Exception("Kasera tidak kirim QR")
-        d["tx_id"] = tx_id; d["external_id"] = ext_id; d["qr_string"] = qr_string
+        if not qr_string:
+            raise Exception(f"Kasera tidak kirim QR: {res}")
+        d["tx_id"] = tx_id
+        d["external_id"] = ext_id
+        d["qr_string"] = qr_string
     except Exception as e:
         print("Kasera Error:", e)
-        bot.send_message(chat_id, "❌ <b>Maaf, Gagal Membuat Pembayaran.</b>", parse_mode="HTML")
+        bot.send_message(chat_id, "❌ <b>Gagal Membuat Pembayaran.</b>\nCoba lagi nanti.", parse_mode="HTML")
         return
-    gambar = bikin_gambar_qris(d["qr_string"], d) if d.get("qr_string") else None
-    teks = ("💎 <b>ZUAN PANEL — PEMBAYARAN</b> 💎\n━━━━━━━━━━━━━━━━━━\n\n<blockquote>"
-        f"📦 Paket : <b>{d['nama']}</b>\n👤 Username : <code>{d['username']}</code>\n💰 Total : <b>Rp {d['harga']:,}</b>\n🧾 Invoice : <code>{d.get('external_id')}</code>\n</blockquote>\n\n"
-        "✅ <b>INI QRIS ASLI &amp; RESMI!</b>\n<blockquote>QR ini diterbitkan langsung oleh <b>Kasera Pay</b> &amp; terverifikasi <b>Bank Indonesia</b>. Bukan gambar editan!</blockquote>\n\n"
-        "📱 <b>Silahkan Scan QR di Atas</b>\n1️⃣ Buka DANA / OVO / GoPay / M-Banking\n2️⃣ Scan QRIS &amp; pastikan nama <b>MUHAMAD IKHSANDI AKBAR</b>\n3️⃣ Pastikan nominal sesuai, lalu konfirmasi\n\n⏰ <i>QR ini berlaku 60 menit.</i>\n🛡️ <i>Pembayaran Aman &amp; Terverifikasi Otomatis</i>")
+    gambar_qris = bikin_gambar_qris(d["qr_string"], d) if d.get("qr_string") else None
+    teks = (f"💎 <b>ZUAN PANEL - PEMBAYARAN</b>\n\nPaket : <b>{d['nama']}</b>\nUsername : <code>{d['username']}</code>\nTotal : <b>Rp {d['harga']:,}</b>\nInvoice : <code>{d.get('external_id')}</code>\n\nScan QR di atas pake DANA / OVO / GoPay / M-Banking\nPastikan nama MUHAMAD IKHSANDI AKBAR\n\nQR berlaku 60 menit.")
     markup = InlineKeyboardMarkup()
     markup.add(InlineKeyboardButton("🔍  SAYA SUDAH BAYAR ✅", callback_data="cek_bayar"))
     try:
-        if gambar: bot.send_photo(chat_id, gambar, caption=teks, parse_mode="HTML", reply_markup=markup)
+        if gambar_qris:
+            bot.send_photo(chat_id, gambar_qris, caption=teks, parse_mode="HTML", reply_markup=markup)
         else:
             qr_img_url = f"https://api.qrserver.com/v1/create-qr-code/?size=600x600&data={urllib.parse.quote(d['qr_string'])}"
             bot.send_photo(chat_id, qr_img_url, caption=teks, parse_mode="HTML", reply_markup=markup)
-    except: bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
-    try: bot.send_message(ADMIN_ID, f"🔔 PESANAN BARU\nUser: @{c.from_user.username}\nPaket: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\nStatus: Menunggu Pembayaran")
-    except: pass
+    except:
+        bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
+    try:
+        bot.send_message(ADMIN_ID, f"🔔 PESANAN BARU\nUser: @{c.from_user.username}\nPaket: {d['nama']}\nUsername: {d['username']}\nEmail: {d['email']}\nTotal: Rp {d['harga']:,}\nStatus: Menunggu Pembayaran")
+    except:
+        pass
 
 def cek_bayar(c):
     chat_id = c.message.chat.id
     d = orders.get(chat_id)
-    if not d: return
-    try: bot.answer_callback_query(c.id, "Memeriksa pembayaran...")
-    except: pass
+    if not d:
+        return
+    try:
+        bot.answer_callback_query(c.id, "Memeriksa pembayaran...")
+    except:
+        pass
     lunas = False
     try:
         headers = {"Authorization": f"Bearer {KASERA_API_KEY}"}
         tx_id = d.get("tx_id") or d.get("external_id")
         r = requests.get(f"{KASERA_BASE}/transactions/{tx_id}", headers=headers, timeout=15)
-        j = r.json(); data = j.get("data") or j
-        if str(data.get("status", "")).lower() == "succeeded": lunas = True
-    except Exception as e: print("Cek Error:", e)
+        j = r.json()
+        data = j.get("data") or j
+        if str(data.get("status", "")).lower() == "succeeded":
+            lunas = True
+    except Exception as e:
+        print("Cek Error:", e)
     if not lunas:
-        bot.send_message(chat_id, "❌ <b>Pembayaran Belum Diterima.</b>\n\n<blockquote>Mohon selesaikan pembayaran terlebih dahulu, tunggu 1 menit, lalu tekan tombol <b>Saya Sudah Bayar</b> kembali.</blockquote>", parse_mode="HTML")
+        bot.send_message(chat_id, "❌ <b>Pembayaran Belum Diterima.</b>\nSelesaikan bayar dulu, tunggu 1 menit, lalu pencet lagi.", parse_mode="HTML")
         return
-    bot.send_message(chat_id, "✅ <b>PEMBAYARAN BERHASIL!</b> 🎉\n\n<blockquote>Terima kasih atas kepercayaan Anda.\nPesanan Anda sedang kami siapkan oleh Admin.\nDetail login akan kami kirimkan sesaat lagi.</blockquote>\n\n<i>— ZUAN PANEL —</i>", parse_mode="HTML")
-    try: bot.send_message(ADMIN_ID, f"💰 *PESANAN LUNAS - MOHON DIPROSES*\n\nUser: @{c.from_user.username} (ID: {chat_id})\nPaket: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}")
-    except: pass
+    bot.send_message(chat_id, "✅ <b>PEMBAYARAN BERHASIL!</b>\n\nPesanan sedang disiapkan Admin.\nDetail login akan dikirim sesaat lagi.", parse_mode="HTML")
+    try:
+        bot.send_message(ADMIN_ID, f"💰 PESANAN LUNAS - MOHON DIPROSES\nUser: @{c.from_user.username} (ID: {chat_id})\nPaket: {d['nama']}\nUsername: {d['username']}\nEmail: {d['email']}\nTotal: Rp {d['harga']:,}")
+    except:
+        pass
 
 print("Bot jalan! ZUAN PANEL - ISI SALDO + QRIS + BANNER READY!")
 bot.infinity_polling()

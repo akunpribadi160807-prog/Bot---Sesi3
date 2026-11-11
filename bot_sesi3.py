@@ -1,209 +1,197 @@
 import os
+import requests
+import time
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN") or ""
+# ================= CONFIG =================
+TOKEN = os.getenv("TOKEN")
+ADMIN_ID = int(os.getenv("ADMIN_ID", "849370608"))
+KASERA_API_KEY = os.getenv("KASERA_API_KEY")
+KASERA_BASE = "https://api.kasera.id"
+
 bot = telebot.TeleBot(TOKEN)
 
-OWNER_USERNAME = "@ShanXPLD"
-OWNER_WA = "083169944241"
-CHANNEL_TESTI = "https://t.me/ZUANPANEL"
-CHANNEL_INFO = "https://t.me/ZUANPANEL"
-
-user_order = {}
-
-PRODUK = {
-    "admin": {"nama": "Admin Panel", "harga": 10000, "desc": "Akun Root Admin (Full Akses)"},
-    "pterodactyl": {"nama": "Panel Pterodactyl", "harga": 6000, "desc": "Panel 1GB - 10GB"},
-    "pterodactyl_legal": {"nama": "Panel Pterodactyl Legal", "harga": 10000, "desc": "Panel Legal Garansi Full"},
-    "reseller": {"nama": "Reseller Panel", "harga": 15000, "desc": "Akses Reseller Panel"},
-    "reseller_legal": {"nama": "Reseller Panel Legal", "harga": 20000, "desc": "Akses Reseller Panel Legal"},
-    "1gb": {"nama": "Panel 1GB", "harga": 6000},
-    "2gb": {"nama": "Panel 2GB", "harga": 8000},
-    "3gb": {"nama": "Panel 3GB", "harga": 10000},
-    "4gb": {"nama": "Panel 4GB", "harga": 12000},
-    "5gb": {"nama": "Panel 5GB", "harga": 14000},
-    "6gb": {"nama": "Panel 6GB", "harga": 16000},
+HARGA = {
+    "1gb": {"nama": "Panel 1GB", "harga": 4000},
+    "2gb": {"nama": "Panel 2GB", "harga": 6000},
+    "3gb": {"nama": "Panel 3GB", "harga": 8000},
+    "4gb": {"nama": "Panel 4GB", "harga": 10000},
+    "5gb": {"nama": "Panel 5GB", "harga": 12000},
+    "6gb": {"nama": "Panel 6GB", "harga": 15000},
     "7gb": {"nama": "Panel 7GB", "harga": 18000},
     "8gb": {"nama": "Panel 8GB", "harga": 20000},
     "9gb": {"nama": "Panel 9GB", "harga": 22000},
-    "10gb": {"nama": "Panel 10GB", "harga": 24000},
+    "10gb": {"nama": "Panel 10GB", "harga": 25000},
     "unli": {"nama": "Panel UNLIMITED", "harga": 30000},
 }
 
-def format_rp(n):
-    return f"Rp {n:,}".replace(",", ".")
+orders = {}
 
-def menu_utama():
-    m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🟢 Menu Layanan", callback_data="menu_layanan"))
-    m.add(InlineKeyboardButton("🔵 Install Panel Free", callback_data="install_free"))
-    m.add(InlineKeyboardButton("🔴 Owner Bot", callback_data="owner"))
-    m.add(InlineKeyboardButton("🟢 Channel Testi ↗", url=CHANNEL_TESTI))
-    m.add(InlineKeyboardButton("🔵 Channel Info ↗", url=CHANNEL_INFO))
-    return m
+# ================= TAMPILAN LAMA - JANGAN DIUBAH =================
+def menu_awal():
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton("🟢 Menu Layanan", callback_data="menu_layanan"))
+    markup.add(InlineKeyboardButton("🔵 Install Panel Free", callback_data="install_free"))
+    markup.add(InlineKeyboardButton("🔴 Owner Bot", callback_data="owner"))
+    markup.add(InlineKeyboardButton("🟢 Channel Testi ↗️", url="https://t.me/ZuanTesti"))
+    return markup
 
-def menu_layanan():
-    m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🔵 Admin Panel - Rp 10.000", callback_data="beli_admin"))
-    m.add(InlineKeyboardButton("🔵 Panel Pterodactyl", callback_data="beli_pterodactyl"))
-    m.add(InlineKeyboardButton("🔵 Panel Pterodactyl Legal", callback_data="beli_pterodactyl_legal"))
-    m.add(InlineKeyboardButton("🔵 Reseller Panel", callback_data="beli_reseller"))
-    m.add(InlineKeyboardButton("🔵 Reseller Panel Legal", callback_data="beli_reseller_legal"))
-    m.add(InlineKeyboardButton("🟢 Panel 1GB - 10GB / UNLI", callback_data="list_panel"))
-    m.add(InlineKeyboardButton("🔴 ⬅ Kembali", callback_data="back"))
-    return m
-
-def list_panel():
-    m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🔵 1GB - Rp 6.000", callback_data="beli_1gb"))
-    m.add(InlineKeyboardButton("🔵 2GB - Rp 8.000", callback_data="beli_2gb"))
-    m.add(InlineKeyboardButton("🔵 3GB - Rp 10.000", callback_data="beli_3gb"))
-    m.add(InlineKeyboardButton("🔵 4GB - Rp 12.000", callback_data="beli_4gb"))
-    m.add(InlineKeyboardButton("🔵 5GB - Rp 14.000", callback_data="beli_5gb"))
-    m.add(InlineKeyboardButton("🔵 6GB - Rp 16.000", callback_data="beli_6gb"))
-    m.add(InlineKeyboardButton("🔵 7GB - Rp 18.000", callback_data="beli_7gb"))
-    m.add(InlineKeyboardButton("🔵 8GB - Rp 20.000", callback_data="beli_8gb"))
-    m.add(InlineKeyboardButton("🔵 9GB - Rp 22.000", callback_data="beli_9gb"))
-    m.add(InlineKeyboardButton("🔵 10GB - Rp 24.000", callback_data="beli_10gb"))
-    m.add(InlineKeyboardButton("🔵 UNLIMITED - Rp 30.000", callback_data="beli_unli"))
-    m.add(InlineKeyboardButton("🔴 ⬅ Kembali", callback_data="menu_layanan"))
-    return m
-
-def menu_bayar():
-    m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🟢 Bayar QRIS", callback_data="bayar_qris"))
-    m.add(InlineKeyboardButton("🔵 Bayar Saldo Bot", callback_data="bayar_saldo"))
-    m.add(InlineKeyboardButton("🔴 Batal", callback_data="batal"))
-    return m
-
-def menu_batal():
-    m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🔴 Batal Order", callback_data="batal"))
-    return m
-
-def menu_kembali():
-    m = InlineKeyboardMarkup()
-    m.add(InlineKeyboardButton("🟢 ⬅ Kembali", callback_data="back"))
-    return m
-
-# INI KUNCINYA BANG! PAKE <blockquote> BIAR GARIS PINK NYA MUNCUL!
-WELCOME_TEXT = """🌟 ✦ ━━━━ 『 WELCOME 』 ━━━━ ✦ 🌟
-
-<blockquote>┌─ PROFIL BOT
-👤 Owner · ZUAN PANEL
-🤖 Name · AUTO ORDER ZUAN PANEL
-⚡ Status · BETA · VIP Only
-⌨️ Prefix · /
-└──────────────</blockquote>
-
-<blockquote>┌─ 📊 STATISTIK
-👥 Total User · 481
-💰 Pendapatan · Rp 2.438.400
-└──────────────</blockquote>
-
-<blockquote>[ 👋 ] Demm Bro, Welcome To Bot AUTO ORDER ZUAN PANEL!</blockquote>"""
+def teks_welcome():
+    return (
+        "🌟✦ ━━━━ 『 WELCOME 』 ━━━━ ✦🌟\n\n"
+        "┌── 「 PROFIL BOT 」 ── ”\n"
+        "│ Owner · ZUAN PANEL\n"
+        "│ 🤖 Name · AUTO ORDER ZUAN PANEL\n"
+        "│ ⚡ Status · BETA · VIP Only\n"
+        "│ 📖 Prefix · /\n"
+        "└──────────────\n\n"
+        "┌── 「 📊 STATISTIK 」 ── ”\n"
+        "│ 👥 Total User · 481\n"
+        "│ 💰 Pendapatan · Rp 2.438.400\n"
+        "└──────────────\n\n"
+        "[ 👋 ] Demm Bro, Welcome To Bot AUTO ORDER ZUAN PANEL!"
+    )
 
 @bot.message_handler(commands=['start'])
-def start(message):
-    user_order.pop(message.chat.id, None)
+def start(m):
     try:
-        with open("banner.jpg", "rb") as photo:
-            bot.send_photo(message.chat.id, photo, caption=WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
+        with open("foto.jpg", "rb") as foto:
+            bot.send_photo(m.chat.id, foto, caption=teks_welcome(), reply_markup=menu_awal())
     except:
-        bot.send_message(message.chat.id, WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
+        bot.send_message(m.chat.id, teks_welcome(), reply_markup=menu_awal())
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback(call):
-    cid = call.message.chat.id
-    mid = call.message.message_id
-    data = call.data
-
-    def edit(text, markup):
-        try:
-            if call.message.photo or call.message.caption:
-                bot.edit_message_caption(text, cid, mid, parse_mode="HTML", reply_markup=markup)
-            else:
-                bot.edit_message_text(text, cid, mid, parse_mode="HTML", reply_markup=markup)
-        except:
-            bot.send_message(cid, text, parse_mode="HTML", reply_markup=markup)
-    bot.answer_callback_query(call.id)
-
-    if data == "back":
-        try: bot.delete_message(cid, mid)
-        except: pass
-        try:
-            with open("banner.jpg", "rb") as photo:
-                bot.send_photo(cid, photo, caption=WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
-        except:
-            bot.send_message(cid, WELCOME_TEXT, parse_mode="HTML", reply_markup=menu_utama())
-        return
+# ================= MENU BARU =================
+@bot.callback_query_handler(func=lambda c: True)
+def semua_callback(c):
+    chat_id = c.message.chat.id
+    data = c.data
 
     if data == "menu_layanan":
-        edit("🛍️ ━━━ DAFTAR MENU LAYANAN BOT ━━━ 🛍️\n\nSilahkan Pilih Produk Yang Ingin Anda Order.", menu_layanan())
-        return
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("🔵 CEK STOK", callback_data="zuan_stok"))
+        markup.add(InlineKeyboardButton("🟢 LIST HARGA", callback_data="zuan_harga"))
+        markup.add(InlineKeyboardButton("🛒 ORDER PANEL", callback_data="zuan_order"))
+        markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="back_home"))
+        bot.send_message(chat_id, "🟢 *MENU LAYANAN ZUAN PANEL*\nPilih yang mau lu cek:", parse_mode="Markdown", reply_markup=markup)
 
-    if data == "list_panel":
-        edit("💰 LIST HARGA PANEL\n\nPilih panel yang mau dibeli bosku!", list_panel())
-        return
+    elif data == "back_home":
+        bot.send_message(chat_id, teks_welcome(), reply_markup=menu_awal())
 
-    if data == "install_free":
-        edit("🎁 INSTALL PANEL FREE\n\nUntuk Install Panel Free, chat OWNER dulu ya bosku!\n\nSyarat: Follow Channel Testi & Info dulu!", menu_kembali())
-        return
+    elif data == "install_free":
+        bot.send_message(chat_id, "🔵 *INSTALL PANEL FREE*\n\nSyarat:\n1. Join Channel Testi\n2. SS Bot ini kirim ke Owner\n3. Tunggu di proses!", parse_mode="Markdown", reply_markup=menu_awal())
 
-    if data == "owner":
-        edit(f"📞 ━━━ CONTACT OWNER BOT ━━━\n\n👤 Name : ZUAN PANEL\n📱 Whatsapp : {OWNER_WA}\n✈️ Telegram : {OWNER_USERNAME}\n\nKamu Limit? Silahkan Klik Command Dibawah", menu_kembali())
-        return
+    elif data == "owner":
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("📞 Chat Owner", url="https://t.me/ZuanPanel"))
+        bot.send_message(chat_id, "🔴 *OWNER BOT*\n\nOwner: ZUAN PANEL\nFast Respon 24 Jam!", parse_mode="Markdown", reply_markup=markup)
 
-    if data == "batal":
-        user_order.pop(cid, None)
-        edit("❌ Order dibatalkan!\n\nBalik ke menu awal ya bosku!", menu_kembali())
-        return
+    elif data == "zuan_stok":
+        bot.send_message(chat_id, "📦 *STOK PANEL*\n\n✅ 1GB - 10GB READY\n✅ UNLI READY\n\nGas order bang!", parse_mode="Markdown")
 
-    if data.startswith("beli_"):
-        key = data.replace("beli_", "")
-        if key in PRODUK:
-            p = PRODUK[key]
-            user_order[cid] = {"produk": p["nama"], "harga": p["harga"], "step": "username"}
-            edit(f"🛒 BELI {p['nama'].upper()}\n\nHarga : {format_rp(p['harga'])}\nBenefit : {p.get('desc','Panel Premium')}\n\n✏️ Silahkan Kirim Username Untuk Panel Yang Ingin Kamu Beli Dengan Minimal 5-9 Huruf.\n\nContoh : PanelZuan, ZuanStore, ZuanPanel", menu_batal())
-            return
+    elif data == "zuan_harga":
+        teks = "💰 *LIST HARGA ZUAN PANEL*\n\n"
+        for k, v in HARGA.items():
+            teks += f"• {v['nama']} : Rp {v['harga']:,}\n"
+        teks += "\n💳 QRIS All Payment\n⚡ Garansi 15 Hari!"
+        bot.send_message(chat_id, teks, parse_mode="Markdown")
 
-    if data == "bayar_qris":
-        order = user_order.get(cid, {})
-        if not order:
-            edit("Order tidak ditemukan, mulai dari /start lagi ya!", menu_kembali())
-            return
-        edit(f"📱 BAYAR VIA QRIS\n\nItem : {order['produk']} ({order.get('username','')})\nTotal : {format_rp(order['harga'])}\n\nSilahkan scan QRIS ini, lalu kirim bukti TF ke {OWNER_USERNAME} ya bosku!\n\nQRIS : Chat OWNER untuk dapetin QRIS!", menu_kembali())
-        return
+    elif data == "zuan_order":
+        markup = InlineKeyboardMarkup()
+        for k, v in HARGA.items():
+            markup.add(InlineKeyboardButton(f"{v['nama']} - Rp {v['harga']:,}", callback_data=f"buy_{k}"))
+        markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="menu_layanan"))
+        bot.send_message(chat_id, "🛒 *PILIH PANEL:*", parse_mode="Markdown", reply_markup=markup)
 
-    if data == "bayar_saldo":
-        order = user_order.get(cid, {})
-        edit(f"💳 BAYAR SALDO BOT\n\nItem : {order.get('produk','-')}\nTotal : {format_rp(order.get('harga',0))}\nSaldo Bot kamu : Rp 0\n\nSaldo kamu kurang bosku! Topup dulu ke OWNER ya!", menu_kembali())
-        return
+    elif data.startswith("buy_"):
+        key = data.replace("buy_", "")
+        item = HARGA[key]
+        orders[chat_id] = {"paket": key, "nama": item['nama'], "harga": item['harga']}
+        bot.send_message(chat_id, f"Lu mau beli *{item['nama']}* Rp {item['harga']:,}\n\nKirim *Username Panel*:\nContoh: `zuan123`", parse_mode="Markdown")
+        bot.register_next_step_handler(c.message, proses_username)
 
-@bot.message_handler(func=lambda m: True)
-def tangkap_username(message):
-    cid = message.chat.id
-    order = user_order.get(cid)
-    if not order or order.get("step") != "username":
-        return
-    username = message.text.strip()
+    elif data == "buat_qris":
+        buat_qris(c)
 
-    if len(username) < 5:
-        bot.send_message(cid, f"❌ Kependekan bosku! Username '{username}' cuma {len(username)} huruf.\n\nMinimal 5 huruf ya! Contoh: PanelZuan\nKirim lagi...")
-        return
-    if len(username) > 9:
-        bot.send_message(cid, f"❌ Kepanjangan bosku! Username '{username}' udah {len(username)} huruf.\n\nMaksimal 9 huruf ya! Contoh: PanelZuan\nKirim lagi...")
-        return
-    if " " in username:
-        bot.send_message(cid, "❌ Username gak boleh ada spasi! Contoh: PanelZuan\nKirim lagi...")
-        return
+    elif data == "cek_bayar":
+        cek_bayar(c)
 
-    order["username"] = username
-    order["step"] = "bayar"
-    bot.send_message(cid,
-        f"💳 PILIH METODE PEMBAYARAN\n\n🛍️ Item : {order['produk']} ({username})\n💰 Total : {format_rp(order['harga'])}\n💰 Saldo Bot kamu : Rp 0",
-        reply_markup=menu_bayar())
+def proses_username(m):
+    chat_id = m.chat.id
+    username = m.text.strip().lower().replace(" ", "")
+    if len(username) < 4:
+        bot.send_message(chat_id, "❌ Username minimal 4 huruf! Kirim lagi:")
+        bot.register_next_step_handler(m, proses_username)
+        return
+    orders[chat_id]["username"] = username
+    bot.send_message(chat_id, f"✅ Username: `{username}`\n\nKirim *Email* buat login panel:", parse_mode="Markdown")
+    bot.register_next_step_handler(m, proses_email)
 
-print("Bot ZUAN ala WANZZ jalan...")
+def proses_email(m):
+    chat_id = m.chat.id
+    email = m.text.strip()
+    if "@" not in email:
+        bot.send_message(chat_id, "❌ Email gak valid! Kirim lagi:")
+        bot.register_next_step_handler(m, proses_email)
+        return
+    orders[chat_id]["email"] = email
+    d = orders[chat_id]
+    teks = f"📋 *KONFIRMASI ORDER*\n\nPanel: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\n\nLanjut bikin QRIS?"
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton("✅ YA, BUAT QRIS", callback_data="buat_qris"))
+    bot.send_message(chat_id, teks, parse_mode="Markdown", reply_markup=markup)
+
+def buat_qris(c):
+    chat_id = c.message.chat.id
+    d = orders.get(chat_id)
+    if not d:
+        return
+    bot.send_message(chat_id, f"⏳ Lagi bikin QRIS Rp {d['harga']:,}...")
+    try:
+        headers = {"Authorization": f"Bearer {KASERA_API_KEY}", "Content-Type": "application/json"}
+        payload = {"amount": d['harga'], "reference": f"ZUAN-{chat_id}-{int(time.time())}", "description": f"Order {d['nama']} - {d['username']}"}
+        r = requests.post(f"{KASERA_BASE}/v1/payment", json=payload, headers=headers, timeout=15)
+        res = r.json()
+        qris_url = res.get("data", {}).get("qr_url") or "https://api.qrserver.com/v1/create-qr-code/?data=ZUAN"
+        d["reference"] = payload["reference"]
+    except Exception as e:
+        print("Kasera Error:", e)
+        qris_url = "https://api.qrserver.com/v1/create-qr-code/?data=ZUAN"
+        d["reference"] = f"ZUAN-{chat_id}-{int(time.time())}"
+    teks = f"💳 *SCAN QRIS INI!*\n\nPanel: {d['nama']}\nUsername: `{d['username']}`\nTotal: Rp {d['harga']:,}\nRef: `{d['reference']}`\n\nAbis bayar klik CEK PEMBAYARAN!"
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton("🔍 CEK PEMBAYARAN", callback_data="cek_bayar"))
+    try:
+        bot.send_photo(chat_id, qris_url, caption=teks, parse_mode="Markdown", reply_markup=markup)
+    except:
+        bot.send_message(chat_id, teks, parse_mode="Markdown", reply_markup=markup)
+    try:
+        bot.send_message(ADMIN_ID, f"🔔 ORDER BARU!\nUser: @{c.from_user.username}\nPanel: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\nStatus: Nunggu Bayar")
+    except:
+        pass
+
+def cek_bayar(c):
+    chat_id = c.message.chat.id
+    d = orders.get(chat_id)
+    if not d:
+        return
+    bot.answer_callback_query(c.id, "Ngecek...")
+    lunas = False
+    try:
+        headers = {"Authorization": f"Bearer {KASERA_API_KEY}"}
+        r = requests.get(f"{KASERA_BASE}/v1/payment/{d.get('reference')}", headers=headers, timeout=10)
+        if "paid" in str(r.json()).lower() or "success" in str(r.json()).lower():
+            lunas = True
+    except:
+        pass
+    if not lunas:
+        bot.send_message(chat_id, "❌ Belum terbayar! Bayar dulu, tunggu 1 menit, klik lagi!")
+        return
+    bot.send_message(chat_id, "✅ *PEMBAYARAN BERHASIL!*\n\nPanel lu lagi disiapin sama Admin!\nTunggu ya, nanti Admin kirim detail login nya ke sini!\n\nMakasih udah order di ZUAN PANEL! 🙏", parse_mode="Markdown")
+    try:
+        bot.send_message(ADMIN_ID, f"💰 *UDAH LUNAS! TOLONG BIKININ MANUAL!*\n\nUser: @{c.from_user.username} (ID: {chat_id})\nPanel: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\n\n👉 Lu yang bikin di panel, terus kirim login nya ke user ya bang!")
+    except:
+        pass
+
+print("Bot jalan! ZUAN PANEL MANUAL READY!")
 bot.infinity_polling()

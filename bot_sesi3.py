@@ -4,7 +4,6 @@ import time
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# ================= CONFIG =================
 TOKEN = os.getenv("TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "849370608"))
 KASERA_API_KEY = os.getenv("KASERA_API_KEY")
@@ -23,12 +22,12 @@ HARGA = {
     "8gb": {"nama": "Panel 8GB", "harga": 20000},
     "9gb": {"nama": "Panel 9GB", "harga": 22000},
     "10gb": {"nama": "Panel 10GB", "harga": 25000},
-    "unli": {"nama": "Panel UNLIMITED", "harga": 30000},
+    "unli": {"nama": "Panel UNLI", "harga": 30000},
 }
 
 orders = {}
 
-# ================= TAMPILAN LAMA - JANGAN DIUBAH =================
+# ================= TAMPILAN LAMA - TETEP! =================
 def menu_awal():
     markup = InlineKeyboardMarkup()
     markup.add(InlineKeyboardButton("🟢 Menu Layanan", callback_data="menu_layanan"))
@@ -53,6 +52,21 @@ def teks_welcome():
         "[ 👋 ] Demm Bro, Welcome To Bot AUTO ORDER ZUAN PANEL!"
     )
 
+# ===== INI KUNCI BIAR GAK NUMPUK! NGEDIT, BUKAN KIRIM BARU! =====
+def edit_pesan(c, teks, markup=None):
+    try:
+        # Kalo pesan nya foto (yang /start), edit caption nya
+        if c.message.photo:
+            bot.edit_message_caption(caption=teks, chat_id=c.message.chat.id, message_id=c.message.message_id, reply_markup=markup, parse_mode="Markdown")
+        else:
+            bot.edit_message_text(teks, chat_id=c.message.chat.id, message_id=c.message.message_id, reply_markup=markup, parse_mode="Markdown")
+    except:
+        # Kalo gagal edit (teks sama), kirim baru
+        try:
+            bot.send_message(c.message.chat.id, teks, reply_markup=markup, parse_mode="Markdown")
+        except:
+            pass
+
 @bot.message_handler(commands=['start'])
 def start(m):
     try:
@@ -61,11 +75,11 @@ def start(m):
     except:
         bot.send_message(m.chat.id, teks_welcome(), reply_markup=menu_awal())
 
-# ================= MENU BARU =================
 @bot.callback_query_handler(func=lambda c: True)
 def semua_callback(c):
     chat_id = c.message.chat.id
     data = c.data
+    bot.answer_callback_query(c.id)
 
     if data == "menu_layanan":
         markup = InlineKeyboardMarkup()
@@ -73,35 +87,81 @@ def semua_callback(c):
         markup.add(InlineKeyboardButton("🟢 LIST HARGA", callback_data="zuan_harga"))
         markup.add(InlineKeyboardButton("🛒 ORDER PANEL", callback_data="zuan_order"))
         markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="back_home"))
-        bot.send_message(chat_id, "🟢 *MENU LAYANAN ZUAN PANEL*\nPilih yang mau lu cek:", parse_mode="Markdown", reply_markup=markup)
+        edit_pesan(c, "🟢 *MENU LAYANAN ZUAN PANEL*\n\nPilih yang mau lu cek:", markup)
 
     elif data == "back_home":
-        bot.send_message(chat_id, teks_welcome(), reply_markup=menu_awal())
+        edit_pesan(c, teks_welcome(), menu_awal())
 
     elif data == "install_free":
-        bot.send_message(chat_id, "🔵 *INSTALL PANEL FREE*\n\nSyarat:\n1. Join Channel Testi\n2. SS Bot ini kirim ke Owner\n3. Tunggu di proses!", parse_mode="Markdown", reply_markup=menu_awal())
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="back_home"))
+        edit_pesan(c, "🔵 *INSTALL PANEL FREE*\n\n┌── 「 SYARAT 」 ── ”\n│ 1. Join Channel Testi\n│ 2. SS Bot ini kirim ke Owner\n│ 3. Tunggu di proses!\n└──────────────", markup)
 
     elif data == "owner":
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton("📞 Chat Owner", url="https://t.me/ZuanPanel"))
-        bot.send_message(chat_id, "🔴 *OWNER BOT*\n\nOwner: ZUAN PANEL\nFast Respon 24 Jam!", parse_mode="Markdown", reply_markup=markup)
+        markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="back_home"))
+        edit_pesan(c, "🔴 *OWNER BOT*\n\nOwner: ZUAN PANEL\nFast Respon 24 Jam!", markup)
 
     elif data == "zuan_stok":
-        bot.send_message(chat_id, "📦 *STOK PANEL*\n\n✅ 1GB - 10GB READY\n✅ UNLI READY\n\nGas order bang!", parse_mode="Markdown")
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("🛒 Gas Order", callback_data="zuan_order"))
+        markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="menu_layanan"))
+        edit_pesan(c, "📦 *STOK PANEL*\n\n┌── 「 STOK READY 」 ── ”\n│ ✅ 1GB - 10GB READY\n│ ✅ UNLI READY\n└──────────────\n\nGas order bang!", markup)
 
     elif data == "zuan_harga":
-        teks = "💰 *LIST HARGA ZUAN PANEL*\n\n"
-        for k, v in HARGA.items():
-            teks += f"• {v['nama']} : Rp {v['harga']:,}\n"
-        teks += "\n💳 QRIS All Payment\n⚡ Garansi 15 Hari!"
-        bot.send_message(chat_id, teks, parse_mode="Markdown")
+        # ===== LIST HARGA BARU, CAKEP! =====
+        teks = (
+            "💰 *LIST HARGA ZUAN PANEL*\n\n"
+            "┌── 「 PANEL RAM 」 ── ”\n"
+            "│ 🟢 1GB  · Rp 4.000\n"
+            "│ 🟢 2GB  · Rp 6.000\n"
+            "│ 🟢 3GB  · Rp 8.000\n"
+            "│ 🟢 4GB  · Rp 10.000\n"
+            "│ 🟢 5GB  · Rp 12.000\n"
+            "│ 🟢 6GB  · Rp 15.000\n"
+            "│ 🟢 7GB  · Rp 18.000\n"
+            "│ 🟢 8GB  · Rp 20.000\n"
+            "│ 🟢 9GB  · Rp 22.000\n"
+            "│ 🟢 10GB · Rp 25.000\n"
+            "└──────────────\n\n"
+            "┌── 「 PANEL UNLI 」 ── ”\n"
+            "│ 🔥 UNLIMITED · Rp 30.000\n"
+            "└──────────────\n\n"
+            "💳 QRIS All Payment\n"
+            "⚡ Garansi 15 Hari!"
+        )
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("🛒 ORDER SEKARANG", callback_data="zuan_order"))
+        markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="menu_layanan"))
+        edit_pesan(c, teks, markup)
 
     elif data == "zuan_order":
+        # ===== ORDER 2 KOLOM, BIAR GAK PANJANG! =====
         markup = InlineKeyboardMarkup()
-        for k, v in HARGA.items():
-            markup.add(InlineKeyboardButton(f"{v['nama']} - Rp {v['harga']:,}", callback_data=f"buy_{k}"))
+        markup.add(
+            InlineKeyboardButton("1GB · 4k", callback_data="buy_1gb"),
+            InlineKeyboardButton("2GB · 6k", callback_data="buy_2gb")
+        )
+        markup.add(
+            InlineKeyboardButton("3GB · 8k", callback_data="buy_3gb"),
+            InlineKeyboardButton("4GB · 10k", callback_data="buy_4gb")
+        )
+        markup.add(
+            InlineKeyboardButton("5GB · 12k", callback_data="buy_5gb"),
+            InlineKeyboardButton("6GB · 15k", callback_data="buy_6gb")
+        )
+        markup.add(
+            InlineKeyboardButton("7GB · 18k", callback_data="buy_7gb"),
+            InlineKeyboardButton("8GB · 20k", callback_data="buy_8gb")
+        )
+        markup.add(
+            InlineKeyboardButton("9GB · 22k", callback_data="buy_9gb"),
+            InlineKeyboardButton("10GB · 25k", callback_data="buy_10gb")
+        )
+        markup.add(InlineKeyboardButton("🔥 UNLI · 30k", callback_data="buy_unli"))
         markup.add(InlineKeyboardButton("🔙 Kembali", callback_data="menu_layanan"))
-        bot.send_message(chat_id, "🛒 *PILIH PANEL:*", parse_mode="Markdown", reply_markup=markup)
+        edit_pesan(c, "🛒 *PILIH PANEL LU:*\n\nPencet yang mau lu beli!", markup)
 
     elif data.startswith("buy_"):
         key = data.replace("buy_", "")
@@ -187,11 +247,11 @@ def cek_bayar(c):
     if not lunas:
         bot.send_message(chat_id, "❌ Belum terbayar! Bayar dulu, tunggu 1 menit, klik lagi!")
         return
-    bot.send_message(chat_id, "✅ *PEMBAYARAN BERHASIL!*\n\nPanel lu lagi disiapin sama Admin!\nTunggu ya, nanti Admin kirim detail login nya ke sini!\n\nMakasih udah order di ZUAN PANEL! 🙏", parse_mode="Markdown")
+    bot.send_message(chat_id, "✅ *PEMBAYARAN BERHASIL!*\n\nPanel lu lagi disiapin sama Admin!\nTunggu ya, nanti Admin kirim detail login nya ke sini!", parse_mode="Markdown")
     try:
-        bot.send_message(ADMIN_ID, f"💰 *UDAH LUNAS! TOLONG BIKININ MANUAL!*\n\nUser: @{c.from_user.username} (ID: {chat_id})\nPanel: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\n\n👉 Lu yang bikin di panel, terus kirim login nya ke user ya bang!")
+        bot.send_message(ADMIN_ID, f"💰 *UDAH LUNAS! TOLONG BIKININ MANUAL!*\n\nUser: @{c.from_user.username} (ID: {chat_id})\nPanel: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}")
     except:
         pass
 
-print("Bot jalan! ZUAN PANEL MANUAL READY!")
+print("Bot jalan! ZUAN PANEL FIX READY!")
 bot.infinity_polling()

@@ -297,8 +297,8 @@ def semua_callback(c):
         orders.pop(chat_id, None)
         bot.send_message(chat_id, "❌ <b>Pesanan Dibatalkan.</b>", parse_mode="HTML")
         
-        def proses_topup_custom(m):
-    chat_id = m.chat.id
+    def proses_topup_custom(m):
+        chat_id = m.chat.id
     try:
         nominal = int(m.text.strip().replace(".", "").replace(",", "").replace("Rp", "").replace(" ", ""))
     except:
@@ -310,7 +310,8 @@ def semua_callback(c):
         bot.register_next_step_handler(m, proses_topup_custom)
         return
     topup_orders[chat_id] = {"nama": f"Top Up Saldo Rp {nominal:,}", "harga": nominal, "username": m.from_user.username or "user", "tipe": "topup"}
-    class FakeMsg: pass
+    class FakeMsg:
+        pass
     fake_c = FakeMsg()
     fake_c.message = m
     fake_c.from_user = m.from_user

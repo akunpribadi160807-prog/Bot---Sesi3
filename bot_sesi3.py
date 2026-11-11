@@ -3,7 +3,7 @@ import requests
 import time
 import telebot
 import urllib.parse
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, MenuButtonDefault
 
 # ================= CONFIG =================
 TOKEN = os.getenv("TOKEN")
@@ -12,6 +12,15 @@ KASERA_API_KEY = os.getenv("KASERA_API_KEY")
 KASERA_BASE = "https://pay.kasera.id/v1"
 
 bot = telebot.TeleBot(TOKEN)
+
+# ===== HAPUS MENU BAWAH YANG LAMA! INI KUNCINYA! =====
+try:
+    bot.delete_my_commands()
+    bot.set_my_commands([])
+    bot.set_chat_menu_button(menu_button=MenuButtonDefault())
+    print("Menu bawah lama BERHASIL DIHAPUS!")
+except Exception as e:
+    print("Gagal hapus menu bawah:", e)
 
 HARGA = {
     "1gb": {"nama": "Panel 1GB", "harga": 4000},
@@ -263,7 +272,6 @@ def buat_qris(c):
         "⏰ <i>QR ini berlaku 60 menit.</i>\n"
         "🛡️ <i>Pembayaran Aman &amp; Terverifikasi Otomatis</i>"
     )
-    # LINK KASERA DISEMBUNYIIN BIAR TAMPILAN TETEP KEREN DI TELEGRAM!
     markup = InlineKeyboardMarkup()
     markup.add(InlineKeyboardButton("🔍  SAYA SUDAH BAYAR ✅", callback_data="cek_bayar"))
     try:
@@ -306,5 +314,5 @@ def cek_bayar(c):
     except:
         pass
 
-print("Bot jalan! ZUAN PANEL FINAL - PREMIUM + QRIS ASLI READY!")
+print("Bot jalan! ZUAN PANEL FINAL - MENU BAWAH DIHAPUS + QRIS ASLI READY!")
 bot.infinity_polling()

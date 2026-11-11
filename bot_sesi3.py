@@ -40,15 +40,12 @@ HARGA = {
 }
 orders = {}
 
-# ================= BANNER MODEL TOKOSHOPP - ZUAN VERSION =================
+# ================= BANNER MODEL TOKOSHOPP - GAMBAR DOANG! =================
 def bikin_gambar_qris(qr_string, d):
     try:
-        # 1. QR ASLI Kasera
         qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=5&data={urllib.parse.quote(qr_string)}"
         r = requests.get(qr_url, timeout=15)
         qr_img = Image.open(BytesIO(r.content)).convert("RGB")
-
-        # 2. Gambar kanan - pake foto.jpg lu (robot ZUAN)
         kanan_img = None
         for f in ["foto.jpg", "banner.jpg", "zuan.jpg"]:
             try:
@@ -58,67 +55,48 @@ def bikin_gambar_qris(qr_string, d):
                 continue
         if kanan_img is None:
             kanan_img = Image.new("RGB", (500, 500), (10, 25, 60))
-
-        # Kanvas: 1000 x 1150 - persis model TOKOSHOPP
         W, H = 1000, 1150
         canvas = Image.new("RGB", (W, H), (255, 248, 230))
         draw = ImageDraw.Draw(canvas)
         try:
             f_judul = ImageFont.truetype("DejaVuSans-Bold.ttf", 44)
-            f_besar = ImageFont.truetype("DejaVuSans-Bold.ttf", 62)
             f_total = ImageFont.truetype("DejaVuSans-Bold.ttf", 68)
             f_logo = ImageFont.truetype("DejaVuSans-Bold.ttf", 66)
             f_kecil = ImageFont.truetype("DejaVuSans-Bold.ttf", 22)
             f_med = ImageFont.truetype("DejaVuSans-Bold.ttf", 28)
-            f_biasa = ImageFont.truetype("DejaVuSans.ttf", 22)
         except:
-            f_judul = f_besar = f_total = f_logo = f_kecil = f_med = f_biasa = ImageFont.load_default()
-
-        def center(y, teks, font, warna):
-            bb = draw.textbbox((0, 0), teks, font=font)
-            draw.text(((W - (bb[2]-bb[0]))//2, y), teks, fill=warna, font=font)
+            f_judul = f_total = f_logo = f_kecil = f_med = ImageFont.load_default()
         def center_x(x0, x1, y, teks, font, warna):
             bb = draw.textbbox((0, 0), teks, font=font)
             w = bb[2]-bb[0]
             draw.text((x0 + (x1-x0-w)//2, y), teks, fill=warna, font=font)
-
-        # Border hitam tebal
+        def center(y, teks, font, warna):
+            bb = draw.textbbox((0, 0), teks, font=font)
+            draw.text(((W - (bb[2]-bb[0]))//2, y), teks, fill=warna, font=font)
         draw.rectangle([0, 0, W-1, H-1], outline=(0, 0, 0), width=10)
-
-        # ===== ATAS KIRI: QRIS HANYA BERLAKU 1 JAM =====
-        # Kotak kiri 0-500, kanan 500-1000
         draw.rectangle([10, 10, 500, 820], fill=(255, 248, 230), outline=(0, 0, 0), width=5)
         center_x(10, 500, 20, "QRIS HANYA", f_judul, (220, 0, 0))
         center_x(10, 500, 70, "BERLAKU 1 JAM", f_judul, (220, 0, 0))
-        # QR
         qr_img = qr_img.resize((420, 420))
         canvas.paste(qr_img, (45, 150))
         center_x(10, 500, 590, "BAYAR DILUAR WAKTU", f_med, (220, 0, 0))
         center_x(10, 500, 625, "EXPIRED? SALDO HANGUS", f_med, (220, 0, 0))
-
-        # ===== KANAN: GAMBAR ROBOT =====
         kanan_crop = kanan_img.resize((490, 810))
         canvas.paste(kanan_crop, (500, 10))
         draw.rectangle([500, 10, 990, 820], outline=(0, 0, 0), width=5)
-
-        # ===== BAWAH: LOGO ZUANPANEL =====
         center(835, "ZUANPANEL.WEB.ID", f_logo, (20, 80, 200))
         center(910, "PAYMENT EDITION", f_med, (0, 0, 0))
-
-        # ===== BAR BIRU TOTAL PEMBAYARAN =====
         draw.rectangle([10, 970, 990, 1080], fill=(20, 90, 180))
         draw.text((25, 990), "TOTAL PEMBAYARAN", fill=(255, 255, 255), font=f_med)
         draw.text((25, 1025), "Gunakan e-wallet atau m-banking", fill=(220, 220, 220), font=f_kecil)
         nominal = f"Rp {d['harga']:,}"
         bb = draw.textbbox((0, 0), nominal, font=f_total)
         draw.text((990 - (bb[2]-bb[0]) - 250, 990), nominal, fill=(255, 255, 255), font=f_total)
-        # Kotak kuning peringatan
         draw.rectangle([740, 1080, 990, 1140], fill=(255, 200, 0))
         draw.text((750, 1090), "⚠️ WAJIB BAYAR", fill=(0, 0, 0), font=f_kecil)
         draw.text((750, 1112), "SESUAI NOMINAL", fill=(0, 0, 0), font=f_kecil)
         draw.text((15, 1095), d['nama'].upper(), fill=(0, 0, 0), font=f_med)
         draw.text((15, 1122), f"Username: {d['username']}", fill=(60, 60, 60), font=f_kecil)
-
         buf = BytesIO()
         canvas.save(buf, format="PNG")
         buf.seek(0)
@@ -302,22 +280,27 @@ def buat_qris(c):
 
     gambar_qris = bikin_gambar_qris(d["qr_string"], d) if d.get("qr_string") else None
 
-    # Kata-kata bawahnya BIARIN persis kayak contoh TOKOSHOPP!
+    # ===== KATA-KATA BAWAH BALIK KE YANG AWAL! BUKAN YANG TOKOSHOPP! =====
     teks = (
-        "📋 <b>PEMBAYARAN ANDA!</b>\n"
+        "💎 <b>ZUAN PANEL — PEMBAYARAN</b> 💎\n"
         "━━━━━━━━━━━━━━━━━━\n\n"
         "<blockquote>"
-        f"Item: <b>{d['nama']} (x1)</b> - {d['username']}\n"
-        f"Total Bayar: <b>Rp {d['harga']:,}</b>\n"
-        f"Order ID: <code>INV-QRIS-{d.get('external_id')}</code>\n"
+        f"📦 Paket : <b>{d['nama']}</b>\n"
+        f"👤 Username : <code>{d['username']}</code>\n"
+        f"💰 Total : <b>Rp {d['harga']:,}</b>\n"
+        f"🧾 Invoice : <code>{d.get('external_id')}</code>\n"
         "</blockquote>\n\n"
-        "⚠️ <i>Bayar pas sesuai nominal!</i>\n"
-        "⏰ <i>Expired: 60 Menit</i>\n\n"
-        "Setelah membayar tekan tombol ✅ <b>Cek Status Pembayaran</b>."
+        "✅ <b>INI QRIS ASLI &amp; RESMI!</b>\n"
+        "<blockquote>QR ini diterbitkan langsung oleh <b>Kasera Pay</b> &amp; terverifikasi <b>Bank Indonesia</b>. Bukan gambar editan! Silahkan scan, pastikan nama merchant &amp; nominal muncul sesuai di aplikasi Anda.</blockquote>\n\n"
+        "📱 <b>Silahkan Scan QR di Atas</b>\n"
+        "1️⃣ Buka DANA / OVO / GoPay / M-Banking\n"
+        "2️⃣ Scan QRIS &amp; pastikan nama <b>MUHAMAD IKHSANDI AKBAR</b>\n"
+        "3️⃣ Pastikan nominal sesuai, lalu konfirmasi\n\n"
+        "⏰ <i>QR ini berlaku 60 menit.</i>\n"
+        "🛡️ <i>Pembayaran Aman &amp; Terverifikasi Otomatis</i>"
     )
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton("✅  Cek Status Pembayaran", callback_data="cek_bayar"))
-    markup.add(InlineKeyboardButton("❌  Batalkan", callback_data="batalkan"))
+    markup.add(InlineKeyboardButton("🔍  SAYA SUDAH BAYAR ✅", callback_data="cek_bayar"))
     try:
         if gambar_qris:
             bot.send_photo(chat_id, gambar_qris, caption=teks, parse_mode="HTML", reply_markup=markup)
@@ -349,13 +332,13 @@ def cek_bayar(c):
     except Exception as e:
         print("Cek Error:", e)
     if not lunas:
-        bot.send_message(chat_id, "❌ <b>Pembayaran Belum Diterima.</b>\n\n<blockquote>Mohon selesaikan pembayaran terlebih dahulu, tunggu 1 menit, lalu tekan tombol <b>Cek Status Pembayaran</b> kembali.</blockquote>", parse_mode="HTML")
+        bot.send_message(chat_id, "❌ <b>Pembayaran Belum Diterima.</b>\n\n<blockquote>Mohon selesaikan pembayaran terlebih dahulu, tunggu 1 menit, lalu tekan tombol <b>Saya Sudah Bayar</b> kembali.</blockquote>", parse_mode="HTML")
         return
-    bot.send_message(chat_id, "✅ <b>PEMBAYARAN BERHASIL!</b> 🎉\n\n<blockquote>Terima kasih atas kepercayaan Anda.\nPesanan Anda sedang kami siapkan oleh Admin.</blockquote>\n\n<i>— ZUAN PANEL —</i>", parse_mode="HTML")
+    bot.send_message(chat_id, "✅ <b>PEMBAYARAN BERHASIL!</b> 🎉\n\n<blockquote>Terima kasih atas kepercayaan Anda.\nPesanan Anda sedang kami siapkan oleh Admin.\nDetail login akan kami kirimkan sesaat lagi.</blockquote>\n\n<i>— ZUAN PANEL —</i>", parse_mode="HTML")
     try:
         bot.send_message(ADMIN_ID, f"💰 *PESANAN LUNAS - MOHON DIPROSES*\n\nUser: @{c.from_user.username} (ID: {chat_id})\nPaket: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}")
     except:
         pass
 
-print("Bot jalan! ZUAN PANEL - BANNER TOKOSHOPP STYLE READY!")
+print("Bot jalan! ZUAN PANEL - BANNER TOKOSHOPP + CAPTION AWAL READY!")
 bot.infinity_polling()

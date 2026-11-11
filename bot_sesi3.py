@@ -247,34 +247,4 @@ def cek_bayar(c):
         pass
 
 print("Bot jalan! ZUAN PANEL FIX BANNER + GARIS READY!")
-bot.infinity_polling()mode="Markdown", reply_markup=markup)
-    try:
-        bot.send_message(ADMIN_ID, f"🔔 ORDER BARU!\nUser: @{c.from_user.username}\nPanel: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\nStatus: Nunggu Bayar")
-    except:
-        pass
-
-def cek_bayar(c):
-    chat_id = c.message.chat.id
-    d = orders.get(chat_id)
-    if not d:
-        return
-    bot.answer_callback_query(c.id, "Ngecek...")
-    lunas = False
-    try:
-        headers = {"Authorization": f"Bearer {KASERA_API_KEY}"}
-        r = requests.get(f"{KASERA_BASE}/v1/payment/{d.get('reference')}", headers=headers, timeout=10)
-        if "paid" in str(r.json()).lower() or "success" in str(r.json()).lower():
-            lunas = True
-    except:
-        pass
-    if not lunas:
-        bot.send_message(chat_id, "❌ Belum terbayar! Bayar dulu, tunggu 1 menit, klik lagi!")
-        return
-    bot.send_message(chat_id, "✅ *PEMBAYARAN BERHASIL!*\n\nPanel lu lagi disiapin sama Admin!\nTunggu ya, nanti Admin kirim detail login nya ke sini!", parse_mode="Markdown")
-    try:
-        bot.send_message(ADMIN_ID, f"💰 *UDAH LUNAS! TOLONG BIKININ MANUAL!*\n\nUser: @{c.from_user.username} (ID: {chat_id})\nPanel: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}")
-    except:
-        pass
-
-print("Bot jalan! ZUAN PANEL FIX READY!")
 bot.infinity_polling()

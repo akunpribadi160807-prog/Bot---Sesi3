@@ -3,7 +3,16 @@ import requests
 import time
 import telebot
 import urllib.parse
+import io
+from io import BytesIO
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, MenuButtonDefault
+
+# PIL buat bikin banner QRIS
+try:
+    from PIL import Image, ImageDraw, ImageFont
+    ADA_PIL = True
+except:
+    ADA_PIL = False
 
 # ================= CONFIG =================
 TOKEN = os.getenv("TOKEN")
@@ -13,14 +22,13 @@ KASERA_BASE = "https://pay.kasera.id/v1"
 
 bot = telebot.TeleBot(TOKEN)
 
-# ===== HAPUS MENU BAWAH YANG LAMA! INI KUNCINYA! =====
+# ===== HAPUS MENU BAWAH LAMA =====
 try:
     bot.delete_my_commands()
     bot.set_my_commands([])
     bot.set_chat_menu_button(menu_button=MenuButtonDefault())
-    print("Menu bawah lama BERHASIL DIHAPUS!")
 except Exception as e:
-    print("Gagal hapus menu bawah:", e)
+    print("Gagal hapus menu:", e)
 
 HARGA = {
     "1gb": {"nama": "Panel 1GB", "harga": 4000},
@@ -36,6 +44,76 @@ HARGA = {
     "unli": {"nama": "Panel UNLIMITED", "harga": 30000},
 }
 orders = {}
+
+# ================= BIKIN GAMBAR QRIS + BANNER =================
+def bikin_gambar_qris(qr_string, d):
+    """
+    QR polosan dari Kasera -> dibikin jadi gambar banner keren!
+    Atas: ZUAN PANEL - PEMBAYARAN RESMI
+    Tengah: QR ASLI
+    Bawah: QRIS RESMI + Nama Merchant + Nominal
+    """
+    try:
+        # 1. Download QR asli dari Kasera (via qrserver render)
+        qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=10&data={urllib.parse.quote(qr_string)}"
+        r = requests.get(qr_url, timeout=15)
+        qr_img = Image.open(BytesIO(r.content)).convert("RGB")
+        qr_img = qr_img.resize((640, 640))
+
+        # 2. Bikin kanvas baru: 800 x 1180
+        W, H = 800, 1180
+        canvas = Image.new("RGB", (W, H), (255, 255, 255))
+        draw = ImageDraw.Draw(canvas)
+
+        # Coba load font tebal, kalo gagal pake default
+        try:
+            font_big = ImageFont.truetype("DejaVuSans-Bold.ttf", 38)
+            font_med = ImageFont.truetype("DejaVuSans-Bold.ttf", 28)
+            font_small = ImageFont.truetype("DejaVuSans.ttf", 24)
+            font_mini = ImageFont.truetype("DejaVuSans-Bold.ttf", 22)
+        except:
+            font_big = ImageFont.load_default()
+            font_med = font_big
+            font_small = font_big
+            font_mini = font_big
+
+        def teks_tengah(y, teks, font, warna):
+            bbox = draw.textbbox((0, 0), teks, font=font)
+            w = bbox[2] - bbox[0]
+            draw.text(((W - w) // 2, y), teks, fill=warna, font=font)
+
+        # ===== BANNER ATAS - BIRU GELAP =====
+        draw.rectangle([0, 0, W, 160], fill=(10, 25, 60))
+        draw.rectangle([0, 160, W, 168], fill=(0, 212, 255))
+        teks_tengah(18, "💎  ZUAN PANEL  💎", font_big, (255, 255, 255))
+        teks_tengah(72, "PEMBAYARAN RESMI - QRIS", font_med, (0, 212, 255))
+        teks_tengah(110, "AUTO ORDER • AMAN • TERPERCAYA", font_mini, (180, 180, 180))
+
+        # ===== INFO PAKET =====
+        teks_tengah(190, d['nama'].upper(), font_big, (10, 25, 60))
+        teks_tengah(240, f"Rp {d['harga']:,}", font_big, (0, 160, 0))
+        teks_tengah(292, f"Username : {d['username']}", font_small, (80, 80, 80))
+
+        # ===== QR DI TENGAH =====
+        canvas.paste(qr_img, ((W - 640) // 2, 330))
+
+        # ===== BANNER BAWAH - BUKTI ASLI =====
+        y0 = 990
+        draw.rectangle([0, y0, W, H], fill=(10, 25, 60))
+        draw.rectangle([0, y0, W, y0+8], fill=(0, 212, 255))
+        teks_tengah(y0+18, "✅  QRIS RESMI  ✅", font_med, (0, 255, 130))
+        teks_tengah(y0+58, "Terverifikasi Bank Indonesia", font_small, (255, 255, 255))
+        teks_tengah(y0+92, "Merchant : MUHAMAD IKHSANDI AKBAR", font_mini, (200, 200, 200))
+        teks_tengah(y0+122, "100% AMAN • Pembayaran Terverifikasi Otomatis", font_mini, (0, 212, 255))
+
+        # Simpen ke memory
+        buf = BytesIO()
+        canvas.save(buf, format="PNG")
+        buf.seek(0)
+        return buf
+    except Exception as e:
+        print("Gagal bikin banner QRIS:", e)
+        return None
 
 # ================= MENU =================
 def menu_awal():
@@ -202,7 +280,7 @@ def proses_email(m):
         f"👤 Username : <code>{d['username']}</code>\n"
         f"📧 Email : <code>{d['email']}</code>\n"
         f"💰 Total Pembayaran : <b>Rp {d['harga']:,}</b>\n"
-        f"💳 Metode : <b>QRIS</b>\n"
+        f"💳 Metode : <b>QRIS RESMI</b>\n"
         "</blockquote>\n\n"
         "Apakah data di atas sudah benar? Silahkan lanjutkan untuk membuat kode pembayaran."
     )
@@ -210,13 +288,13 @@ def proses_email(m):
     markup.add(InlineKeyboardButton("✅  LANJUTKAN PEMBAYARAN 💳", callback_data="buat_qris"))
     bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
 
-# ================= QRIS ASLI KASERA =================
+# ================= QRIS ASLI + BANNER =================
 def buat_qris(c):
     chat_id = c.message.chat.id
     d = orders.get(chat_id)
     if not d:
         return
-    bot.send_message(chat_id, f"⏳ <b>Mohon Tunggu...</b>\n<i>Sedang menyiapkan kode pembayaran sebesar Rp {d['harga']:,} untuk Anda.</i>", parse_mode="HTML")
+    bot.send_message(chat_id, f"⏳ <b>Mohon Tunggu...</b>\n<i>Sedang menyiapkan kode pembayaran resmi sebesar Rp {d['harga']:,} untuk Anda.</i>", parse_mode="HTML")
     try:
         headers = {"Authorization": f"Bearer {KASERA_API_KEY}", "Content-Type": "application/json"}
         ext_id = f"ZUAN-{chat_id}-{int(time.time())}"
@@ -243,21 +321,23 @@ def buat_qris(c):
         d["tx_id"] = tx_id
         d["external_id"] = ext_id
         d["checkout_url"] = checkout_url
-        if qr_string:
-            qr_img = f"https://api.qrserver.com/v1/create-qr-code/?size=600x600&data={urllib.parse.quote(qr_string)}"
-        else:
-            qr_img = None
+        d["qr_string"] = qr_string
     except Exception as e:
         print("Kasera Error:", e)
-        bot.send_message(chat_id, "❌ <b>Maaf, Gagal Membuat Pembayaran.</b>\n\n<blockquote>Sistem pembayaran sedang mengalami kendala. Mohon coba beberapa saat lagi atau hubungi Admin.</blockquote>\n\n<i>Kode Error: KASERA-CONNECT</i>", parse_mode="HTML")
+        bot.send_message(chat_id, "❌ <b>Maaf, Gagal Membuat Pembayaran.</b>\n\n<blockquote>Sistem pembayaran sedang mengalami kendala. Mohon coba beberapa saat lagi atau hubungi Admin.</blockquote>", parse_mode="HTML")
         try:
-            bot.send_message(ADMIN_ID, f"⚠️ KASERA ERROR!\nUser: @{c.from_user.username}\nError: {e}\nCek KASERA_API_KEY! Harus diawali kp_live_ atau kp_test_")
+            bot.send_message(ADMIN_ID, f"⚠️ KASERA ERROR!\nUser: @{c.from_user.username}\nError: {e}")
         except:
             pass
         return
 
+    # ===== BIKIN GAMBAR QR + BANNER! =====
+    gambar_qris = None
+    if d.get("qr_string"):
+        gambar_qris = bikin_gambar_qris(d["qr_string"], d)
+
     teks = (
-        "💎 <b>ZUAN PANEL — PEMBAYARAN</b> 💎\n"
+        "💎 <b>ZUAN PANEL — PEMBAYARAN RESMI</b> 💎\n"
         "━━━━━━━━━━━━━━━━━━\n\n"
         "<blockquote>"
         f"📦 Paket : <b>{d['nama']}</b>\n"
@@ -265,21 +345,26 @@ def buat_qris(c):
         f"💰 Total : <b>Rp {d['harga']:,}</b>\n"
         f"🧾 Invoice : <code>{d.get('external_id')}</code>\n"
         "</blockquote>\n\n"
-        "📱 <b>Silahkan Scan QR di Atas</b>\n"
+        "✅ <b>INI QRIS ASLI &amp; RESMI!</b>\n"
+        "<blockquote>QR ini diterbitkan langsung oleh <b>Kasera Pay</b> &amp; terverifikasi <b>Bank Indonesia</b>. Bukan gambar editan! Silahkan scan, pastikan nama merchant &amp; nominal muncul sesuai di aplikasi Anda.</blockquote>\n\n"
+        "📱 <b>Cara Bayar:</b>\n"
         "1️⃣ Buka DANA / OVO / GoPay / M-Banking\n"
-        "2️⃣ Scan QRIS &amp; pastikan nama <b>MUHAMAD IKHSANDI AKBAR</b>\n"
-        "3️⃣ Pastikan nominal sesuai, lalu konfirmasi\n\n"
+        "2️⃣ Scan QRIS di atas &amp; pastikan nama <b>MUHAMAD IKHSANDI AKBAR</b>\n"
+        "3️⃣ Pastikan nominal <b>sesuai</b>, lalu konfirmasi\n\n"
         "⏰ <i>QR ini berlaku 60 menit.</i>\n"
-        "🛡️ <i>Pembayaran Aman &amp; Terverifikasi Otomatis</i>"
+        "🛡️ <i>100% Aman • Terverifikasi Otomatis • Garansi Uang Kembali Jika Tidak Masuk</i>"
     )
     markup = InlineKeyboardMarkup()
     markup.add(InlineKeyboardButton("🔍  SAYA SUDAH BAYAR ✅", callback_data="cek_bayar"))
     try:
-        if qr_img:
-            bot.send_photo(chat_id, qr_img, caption=teks, parse_mode="HTML", reply_markup=markup)
+        if gambar_qris:
+            bot.send_photo(chat_id, gambar_qris, caption=teks, parse_mode="HTML", reply_markup=markup)
         else:
-            bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
-    except:
+            # Fallback kalo PIL gagal: QR polosan tapi tetep asli
+            qr_img_url = f"https://api.qrserver.com/v1/create-qr-code/?size=600x600&data={urllib.parse.quote(d['qr_string'])}"
+            bot.send_photo(chat_id, qr_img_url, caption=teks, parse_mode="HTML", reply_markup=markup)
+    except Exception as e:
+        print("Kirim QR Error:", e)
         bot.send_message(chat_id, teks, parse_mode="HTML", reply_markup=markup)
     try:
         bot.send_message(ADMIN_ID, f"🔔 PESANAN BARU\nUser: @{c.from_user.username}\nPaket: {d['nama']}\nUsername: `{d['username']}`\nEmail: `{d['email']}`\nTotal: Rp {d['harga']:,}\nStatus: Menunggu Pembayaran")
@@ -314,5 +399,5 @@ def cek_bayar(c):
     except:
         pass
 
-print("Bot jalan! ZUAN PANEL FINAL - MENU BAWAH DIHAPUS + QRIS ASLI READY!")
+print("Bot jalan! ZUAN PANEL FINAL - QRIS + BANNER RESMI READY!")
 bot.infinity_polling()

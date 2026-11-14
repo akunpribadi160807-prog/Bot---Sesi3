@@ -540,7 +540,45 @@ def pilih_vps(call):
     kat = kat.upper()
     spec = VPS_KATEGORI[kat]["list"][int(idx)]
     order_id = f"VPS{random.randint(1000, 9999)}"
-    bot.send_message(call.message.chat.id, f"✅ Order VPS Berhasil!\n\n📦 Produk: VPS {kat} - {spec['ram']} RAM\n{spec['cpu']}\n{spec['ssd']}\n{spec['bw']}\n💰 Harga: Rp {spec['harga']:,}\n🆔 Order ID: {order_id}\n\nSilahkan lakukan pembayaran!")
+    data = load_data()
+    data[order_id] = {
+        "user_id": call.from_user.id,
+        "username": call.from_user.username,
+        "paket": f"VPS {kat} - {spec['ram']} RAM",
+        "harga": spec['harga'],
+        "panel_user": "-",
+        "email": "-",
+        "status": "menunggu_bukti"
+    }
+    save_data(data)
+    teks = (
+        f"🧾 *INVOICE - ZUAN PANEL* 🧾\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"🆔 Order ID: `{order_id}`\n"
+        f"📦 Produk: VPS {kat} - {spec['ram']} RAM\n"
+        f"{spec['cpu']}\n"
+        f"{spec['ssd']}\n"
+        f"{spec['bw']}\n"
+        f"💰 Total: *Rp {spec['harga']:,}*\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"💳 *METODE PEMBAYARAN ZUAN PANEL* 💳\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"🏦 *SEABANK:* 901242145662\n"
+        f"a.n MUHAMAD IKHSANDI AKBAR\n\n"
+        f"🏦 *BSI:* 7342034459\n"
+        f"a.n MUHAMAD IKHSANDI AKBAR\n\n"
+        f"📱 *GOPAY:* 085872257850\n"
+        f"a.n MUHAMAD IKHSANDI AKBAR\n\n"
+        f"📷 *QRIS:* DEVELOPER PANEL IN\n"
+        f"a.n MUHAMAD IKHSANDI AKBAR\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"Setelah transfer, kirim *FOTO BUKTI TF* kesini ya kak! 🤍"
+    )
+    bot.send_message(call.message.chat.id, teks, parse_mode="Markdown")
+    try:
+        bot.send_photo(call.message.chat.id, "https://i.ibb.co.com/HLnGJPGK/qr-ID1026639236524-14-11-26-1794643632-1794643632979.jpg", caption="📷 *QRIS ZUAN PANEL*\nScan ini ya kak!", parse_mode="Markdown")
+    except:
+        pass
     hapus_pesan(call.message.chat.id, call.message.message_id)
 print("✅ ZUAN PANEL - FINAL ELEGAN JALAN!")
 bot.infinity_polling()

@@ -11,7 +11,11 @@ GROUP_UTAMA = -1004497488934
 GROUP_PROMO = -1003900745031
 GROUP_TESTI = -1004432426937
 GROUP_PAYMENT = -1004257626762
-
+# === LINK GRUP ZUAN PANEL - UDAH ASLI ===
+LINK_GRUP_UTAMA = "https://t.me/+W3MpouTl421mYWI9"
+LINK_GRUP_PROMO = "https://t.me/+jbxIKw7ic7gyMmQ1"
+LINK_GRUP_PAYMENT = "https://t.me/+QOEOL7iMLWE1YTk1"
+LINK_GRUP_TESTI = "https://t.me/+67DpU4ac2HxiY2U1"
 # === PEMBAYARAN FINAL ===
 NAMA_BISNIS = "DEVELOPER PANEL IN"
 NAMA_REKENING = "MUHAMAD IKHSANDI AKBAR"
@@ -75,6 +79,36 @@ def kirim_promo(teks, foto=None):
             else: bot.send_message(gid, teks, parse_mode="Markdown")
         except Exception as e: print(f"[PROMO GAGAL] {e}")
 
+def kirim_link_grup(chat_id):
+    teks = (
+        f"🎉 *MAKASIH UDAH ORDER DI ZUAN PANEL!* 🎉\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"Biar kakak gak ketinggalan info, yuk gabung semua grup kita! 👇\n\n"
+        f"👑 *GRUP UTAMA - ZUAN PANEL*\n"
+        f"Tempat ngobrol, tanya-tanya, & info restock!\n"
+        f"👉 {LINK_GRUP_UTAMA}\n\n"
+        f"⭐ *GRUP TESTIMONI*\n"
+        f"Bukti orderan pelanggan lain, asli no settingan!\n"
+        f"👉 {LINK_GRUP_TESTI}\n\n"
+        f"🔥 *GRUP BEBAS PROMOSI*\n"
+        f"Promo tiap hari, harga miring, gas cepet-cepetan!\n"
+        f"👉 {LINK_GRUP_PROMO}\n\n"
+        f"💳 *GRUP PAYMENT / INFO PEMBAYARAN*\n"
+        f"Info pembayaran & bukti TF yang udah ACC!\n"
+        f"👉 {LINK_GRUP_PAYMENT}\n\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"Jangan lupa join semua ya kak, biar gak ketinggalan promo 5GB cuma 15K! 🤍"
+    )
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton("👑  Gabung Grup Utama", url=LINK_GRUP_UTAMA))
+    markup.add(InlineKeyboardButton("⭐  Liat Testimoni", url=LINK_GRUP_TESTI))
+    markup.add(InlineKeyboardButton("🔥  Grup Bebas Promosi", url=LINK_GRUP_PROMO))
+    markup.add(InlineKeyboardButton("💳  Grup Payment", url=LINK_GRUP_PAYMENT))
+    try:
+        bot.send_message(chat_id, teks, parse_mode="Markdown", reply_markup=markup)
+    except Exception as e:
+        print(f"[LINK GRUP GAGAL] {e}")
+        
 def kirim_welcome_testi(user):
     if user.id in udah_welcome: return
     try:
@@ -291,6 +325,7 @@ def handle_verif_admin(call):
         bot.send_message(call.message.chat.id, f"✅ Order {order_id} udah di-ACC! Pelanggan udah dikasih tau buat lanjut!")
         if user_chat_id:
             bot.send_message(user_chat_id, f"Alhamdulillah, makasih ya kak! ✅\n\nBukti transfer kakak udah kami cek, udah bener transfer ke *{NAMA_BISNIS}* / *{NAMA_REKENING}*! 🎉\n\nPanelnya langsung kami buatin ya, tunggu sebentar! 🙏✨", parse_mode="Markdown")
+            kirim_link_grup(user_chat_id)
             markup_izin = InlineKeyboardMarkup()
             markup_izin.add(InlineKeyboardButton("✅  Boleh, Gas! Jadiin Testi", callback_data=f"izin_ya_{order_id}"))
             markup_izin.add(InlineKeyboardButton("❌  Jangan, Privasi Kak", callback_data=f"izin_tidak_{order_id}"))

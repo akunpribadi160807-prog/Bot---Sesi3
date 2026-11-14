@@ -574,13 +574,14 @@ def pilih_vps(call):
         "user_id": call.from_user.id,
         "username": call.from_user.username,
         "paket": f"VPS {kat} - {spec['ram']} RAM",
+        "paket_nama": f"VPS {kat} - {spec['ram']} RAM",
         "harga": spec['harga'],
         "panel_user": "-",
         "email": "-",
         "status": "menunggu_bukti",
         "step" : "nunggu_bukti"
     }
-    orders[call.from_user.id] = {"order_id": order_id, "step": "nunggu_bukti", "paket": f"VPS {kat} - {spec['ram']}", "harga": spec['harga'], "status": "menunggu_bukti"}
+    orders[call.from_user.id] = {"order_id": order_id, "step": "nunggu_bukti", "paket": f"VPS {kat} - {spec['ram']} RAM", "paket_nama": f"VPS {kat} - {spec['ram']} RAM", "harga": spec['harga']}
     orders_by_id[order_id] = orders[call.from_user.id]
     save_data(data)
     teks = (

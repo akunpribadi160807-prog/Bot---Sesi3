@@ -18,6 +18,11 @@ def load_data():
 def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=2)
+def hapus_pesan(chat_id, message_id):
+    try:
+        bot.delete_message(chat_id, message_id)
+    except:
+        pass
 TOKEN = os.getenv("TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "8493708698"))
 bot = telebot.TeleBot(TOKEN)
@@ -600,6 +605,11 @@ def pilih_vps(call):
         bot.send_photo(call.message.chat.id, "https://i.ibb.co.com/HLnGJPGK/qr-ID1026639236524-14-11-26-1794643632-1794643632979.jpg", caption="📷 *QRIS ZUAN PANEL*\nScan ini ya kak!", parse_mode="Markdown")
     except:
         pass
+            # kirim notif ke grup langsung
+    try:
+        bot.send_message(GROUP_PAYMENT, f"🔔 ORDER BARU VPS\n\n🆔 Order ID: {order_id}\n👤 User: @{call.from_user.username} ({call.from_user.id})\n📦 Produk: {spec}\n💰 Total: Rp {harga:,}\n\n⏳ Status: Menunggu Pembayaran")
+    except Exception as e:
+        print("Gagal kirim ke grup:", e)
     hapus_pesan(call.message.chat.id, call.message.message_id)
 print("✅ ZUAN PANEL - FINAL ELEGAN JALAN!")
 bot.infinity_polling()

@@ -78,7 +78,7 @@ VPS_KATEGORI = {
             {"ram": "2GB", "cpu": "2 CPU", "ssd": "60GB SSD", "bw": "3TB BW", "harga": 5000},
             {"ram": "4GB", "cpu": "2 CPU", "ssd": "80GB SSD", "bw": "4TB BW", "harga": 5000},
             {"ram": "8GB", "cpu": "4 CPU", "ssd": "160GB SSD", "bw": "5TB BW", "harga": 5000},
-            {"ram": "16GB", "cpu": "2 CPU", "ssd": "50GB SSD", "bw": "4TB BW", "harga": 5000},
+            {"ram": "16GB", "cpu": "4 CPU", "ssd": "50GB SSD", "bw": "4TB BW", "harga": 5000},
         ]
     },
     "PREMIUM": {

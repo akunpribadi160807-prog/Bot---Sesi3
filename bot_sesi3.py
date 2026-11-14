@@ -2,7 +2,22 @@ import os, time, requests, telebot, threading, random
 from datetime import datetime
 from io import BytesIO
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import json
+import os
+DATA_FILE = "vps_orders.json"
 
+def load_data():
+    if not os.path.exists(DATA_FILE):
+        return {}
+    try:
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return {}
+
+def save_data(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=2)
 TOKEN = os.getenv("TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "8493708698"))
 bot = telebot.TeleBot(TOKEN)

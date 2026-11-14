@@ -318,7 +318,8 @@ def handle_input(message):
 def handle_bukti_tf(message):
     uid = message.from_user.id
     data = orders.get(uid)
-    if not data or data.get("step") != "nunggu_bukti":
+        if not data or data.get("step") != "nunggu_bukti":
+        bot.send_message(message.chat.id, "❌ Gak ada pesanan yang lagi nunggu bukti ya kak. Silahkan order dulu via /start")
         return
     order_id = data.get("order_id")
     if not order_id: return

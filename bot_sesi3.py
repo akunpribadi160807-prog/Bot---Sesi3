@@ -167,6 +167,7 @@ def start(message):
     markup.add(InlineKeyboardButton("🛒  Order Panel", callback_data="menu_order"), InlineKeyboardButton("💳  Top Up Saldo", callback_data="menu_topup"))
     markup.add(InlineKeyboardButton("📦  Cek Stok", callback_data="menu_stok"), InlineKeyboardButton("💬  Hubungi Admin", url="https://t.me/zuanww"))
     markup.add(InlineKeyboardButton("🌐  Kunjungi Website", url="https://zuanpanel.web.id"))
+    markup.add(InlineKeyboardButton("🖥 Order VPS Peforma Ultra", callback_data="menu_vps"))
     try:
         img = requests.get(BANNER_URL, timeout=20).content
         bot.send_photo(message.chat.id, BytesIO(img), caption=caption, parse_mode="Markdown", reply_markup=markup)
@@ -449,5 +450,77 @@ def auto_promo_loop():
         kirim_promo(teks, foto=BANNER_URL)
 
 threading.Thread(target=auto_promo_loop, daemon=True).start()
+
+# === VPS - PILIH KATEGORI DULU, BARU SPEK ===
+VPS_KATEGORI = {
+    "low": {"nama": "LOW", "emoji": "🟢", "garansi": "30 Hari", "replace": "1x Replace selama masa garansi", "harga": 6000, "spek": "2GB RAM\n2 CPU\n60GB SSD\n3TB BW", "harga_usd": "$0.33"},
+    "basic": {"nama": "BASIC", "emoji": "💎", "garansi": "30 Hari", "replace": "1x Replace selama masa garansi", "harga": 8000, "spek": "4GB RAM\n2 CPU\n80GB SSD\n4TB BW", "harga_usd": "$0.44"},
+    "medium": {"nama": "MEDIUM", "emoji": "🟢", "garansi": "30 Hari", "replace": "2x Replace selama masa garansi", "harga": 10000, "spek": "8GB RAM\n4 CPU\n160GB SSD\n5TB BW", "harga_usd": "$0.55"},
+    "premium": {"nama": "PREMIUM", "emoji": "💎", "garansi": "30 Hari", "replace": "1x Replace selama masa garansi", "harga": 12000, "spek": "16GB RAM\n2 CPU\n50GB SSD\n4TB BW", "harga_usd": "$0.66"},
+}
+
+def kirim_vps_kategori(chat_id):
+    teks = (
+        f"🚀 *VPS DIGITALOCEAN*\n"
+        f"✅ Stok sudah dicek saat membuka layanan.\n"
+        f"🔒 Stok akan dicek lagi sebelum pembayaran.\n\n"
+        f"📦 *PILIH PAKET*\n\n"
+        f"🟢 *LOW*\n"
+        f"🛡️ Garansi: 30 Hari\n"
+        f"🔄 Replace: 1x Replace selama masa garansi\n\n"
+        f"💎 *BASIC*\n"
+        f"🛡️ Garansi: 30 Hari\n"
+        f"🔄 Replace: 1x Replace selama masa garansi\n\n"
+        f"🟢 *MEDIUM*\n"
+        f"🛡️ Garansi: 30 Hari\n"
+        f"🔄 Replace: 2x Replace selama masa garansi\n\n"
+        f"💎 *PREMIUM*\n"
+        f"🛡️ Garansi: 30 Hari\n"
+        f"🔄 Replace: 1x Replace selama masa garansi\n\n"
+        f"👇 Pilih paket untuk melihat spesifikasi dan harga.\n\n"
+        f"📦 Total Stok Tersedia: 8 VPS\n"
+        f"✅ STOK VPS TERUPDATE HARI INI!"
+    )
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton("🟢 LOW", callback_data="vpskat_low"), InlineKeyboardButton("💎 BASIC", callback_data="vpskat_basic"))
+    markup.add(InlineKeyboardButton("🟢 MEDIUM", callback_data="vpskat_medium"), InlineKeyboardButton("💎 PREMIUM", callback_data="vpskat_premium"))
+    markup.add(InlineKeyboardButton("⬅️ Kembali", callback_data="menu_lain"))
+    bot.send_message(chat_id, teks, parse_mode="Markdown", reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "menu_vps")
+def menu_vps(call):
+    kirim_vps_kategori(call.message.chat.id)
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("vpskat_"))
+def detail_vps_kategori(call):
+    kat = call.data.replace("vpskat_", "")
+    info = VPS_KATEGORI[kat]
+    teks = (
+        f"{info['emoji']} *VPS {info['nama']} - Peforma Ultra*\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"🖥 *SPESIFIKASI:*\n"
+        f"{info['spek']}\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"🛡️ Garansi: {info['garansi']}\n"
+        f"🔄 Replace: {info['replace']}\n"
+        f"💰 Harga: Rp {info['harga']:,} / {info['harga_usd']}\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"✅ Stok Ready! Mau order yang ini kak?"
+    )
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton(f"🛒 Order VPS {info['nama']} - Rp {info['harga']:,}", callback_data=f"vps_order_{kat}"))
+    markup.add(InlineKeyboardButton("⬅️ Kembali Pilih Paket", callback_data="menu_vps"))
+    bot.send_message(call.message.chat.id, teks, parse_mode="Markdown", reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("vps_order_"))
+def pilih_vps(call):
+    kat = call.data.replace("vps_order_", "")
+    info = VPS_KATEGORI[kat]
+    data = load_data()
+    order_id = f"VPS{random.randint(1000,9999)}"
+    data[order_id] = {"user_id": call.from_user.id, "username": call.from_user.username, "jenis": "VPS", "paket": f"VPS {info['nama']} - {info['spek'].replace(chr(10), ' - ')}", "harga": info['harga'], "status": "menunggu_username"}
+    save_data(data)
+    bot.send_message(call.message.chat.id, f"✅ Kakak pilih *VPS {info['nama']} - Rp {info['harga']:,}*\n\nSilahkan kirim *Username VPS* yang kakak mau ya!\nContoh: `zuanvps`", parse_mode="Markdown")
+    hapus_pesan(call.message.chat.id, call.message.message_id)
 print("✅ ZUAN PANEL - FINAL ELEGAN JALAN!")
 bot.infinity_polling()

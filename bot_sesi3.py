@@ -25,6 +25,24 @@ HARGA = {
 orders = {}
 orders_by_id = {}
 
+FILE_WELCOME = "udah_welcome.txt"
+udah_welcome = set()
+try:
+    if os.path.exists(FILE_WELCOME):
+        with open(FILE_WELCOME, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line: udah_welcome.add(int(line))
+        print(f"[WELCOME LOAD] {len(udah_welcome)} user udah pernah welcome")
+except Exception as e: print(f"[WELCOME LOAD GAGAL] {e}")
+
+def simpan_welcome(uid):
+    try:
+        udah_welcome.add(uid)
+        with open(FILE_WELCOME, "a") as f:
+            f.write(f"{uid}\n")
+    except Exception as e: print(f"[SIMPAN WELCOME GAGAL] {e}")
+
 def hapus_pesan_lama(chat_id, message_id):
     try: bot.delete_message(chat_id, message_id)
     except: pass
@@ -51,14 +69,25 @@ def kirim_promo(teks, foto=None):
             else: bot.send_message(gid, teks, parse_mode="Markdown")
         except Exception as e: print(f"[PROMO GAGAL] {e}")
 
-# ===== WELCOME BARU - JADI 1 PESAN AJA, 1 TOMBOL AJA, TEKS LEBIH KEREN =====
 def kirim_welcome_testi(user):
+    if user.id in udah_welcome:
+        print(f"[WELCOME SKIP] {user.id} udah pernah, gak kirim lagi")
+        return
     try:
         uname = f"@{user.username}" if user.username else "-"
         nama = user.first_name or "Pelanggan Baru"
         waktu = datetime.now().strftime("%H:%M, %d/%m/%y")
-        # 1 PESAN AJA - FOTO + SEMUA TEKS JADI SATU CAPTION
-        caption = (
+        total_baru = len(udah_welcome) + 1
+        # Target berikutnya biar ada progress bar - misal target 20, 50, 100
+        if total_baru < 20: target = 20
+        elif total_baru < 50: target = 50
+        elif total_baru < 100: target = 100
+        else: target = total_baru + 50
+        sisa = target - total_baru
+        # Bikin progress bar 10 kotak
+        persen = int(total_baru / target * 10)
+        bar = "█" * persen + "░" * (10 - persen)
+        caption_testi = (
             f"👑 *PELANGGAN BARU DATANG* 👑\n"
             f"━━━━━━━━━━━━━━━━━━\n"
             f"✨ Selamat datang, *{nama}*! ✨\n"
@@ -71,14 +100,51 @@ def kirim_welcome_testi(user):
             f"Restock • Promo • Harga • Stock • Panel • Auto Order\n\n"
             f"Semoga betah ya kak, jangan lupa order, gas! 🔥"
         )
-        # CUMA 1 TOMBOL, GAK ADA 2 LAGI!
+        # ===== INI YANG UDAH GUE ISIIN DIBAWAH TOTALNYA BIAR GAK POLOS! =====
+        caption_utama = (
+            f"👑 *PELANGGAN BARU DATANG* 👑\n"
+            f"━━━━━━━━━━━━━━━━━━\n"
+            f"✨ Selamat datang, *{nama}*! ✨\n"
+            f"Welcome to *ZUAN PANEL* — tempatnya panel premium.\n\n"
+            f"╭ ─── *INFO PELANGGAN* ─── ╮\n"
+            f"│ 👤 Username : {uname}\n"
+            f"│ 🆔 ID : `{user.id}`\n"
+            f"│ ⏰ Start : {waktu}\n"
+            f"╰ ───────────────── ╯\n\n"
+            f"╔ ═══ *TOTAL PELANGGAN BARU* ═══ ╗\n"
+            f"║  👥  *{total_baru} PELANGGAN*  udah join!  ║\n"
+            f"╚ ═══════════════════════ ╝\n\n"
+            f"📊 *MENUJU {target} PELANGGAN*\n"
+            f"[{bar}] {total_baru}/{target}\n"
+            f"Kurang {sisa} lagi, gas ramein! 🔥\n\n"
+            f"━━━━━━━━━━━━━━━━━━\n"
+            f"🎁 *BONUS MEMBER BARU*\n"
+            f"│ • Garansi Full — Kalo ada apa-apa, ganti baru!\n"
+            f"│ • Support 24 Jam — Admin fast respon!\n"
+            f"│ • Proses Otomatis — Gak perlu nunggu lama!\n"
+            f"━━━━━━━━━━━━━━━━━━\n"
+            f"🔥 *PALING LARIS HARI INI*\n"
+            f"│ ⭐ Panel 5GB — Rp 15.000 aja!\n"
+            f"│ 💎 Panel UNLI — Rp 50.000, bebas puas-puasin!\n"
+            f"━━━━━━━━━━━━━━━━━━\n"
+            f"⭐⭐⭐⭐⭐  *5.0 / 5.0* — 100% Pelanggan Puas!\n"
+            f"📦 Stok : *READY* — Langsung gas order!\n\n"
+            f"👑 Yuk jadi pelanggan ke-*{total_baru + 1}* selanjutnya!\n"
+            f"Semoga betah ya kak *{nama}*, jangan lupa order! 🤍"
+        )
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton("🚀  START JUGA — GAS ORDER!", url="https://t.me/Auto_orderpanelbaru_bot?start=start"))
-        try:
-            img = requests.get(WELCOME_URL, timeout=20).content
-            bot.send_photo(GROUP_TESTI, BytesIO(img), caption=caption, parse_mode="Markdown", reply_markup=markup)
-        except:
-            bot.send_message(GROUP_TESTI, caption, parse_mode="Markdown", reply_markup=markup)
+        for gid, caption, nama_grup in [(GROUP_TESTI, caption_testi, "TESTI"), (GROUP_UTAMA, caption_utama, "UTAMA")]:
+            try:
+                img = requests.get(WELCOME_URL, timeout=20).content
+                bot.send_photo(gid, BytesIO(img), caption=caption, parse_mode="Markdown", reply_markup=markup)
+                print(f"[WELCOME OK] {nama_grup} {nama} - Total: {total_baru}")
+            except Exception as e:
+                print(f"[WELCOME GAGAL {nama_grup}] {e}")
+                try: bot.send_message(gid, caption, parse_mode="Markdown", reply_markup=markup)
+                except: pass
+        simpan_welcome(user.id)
+        print(f"[WELCOME OK] {nama} {user.id} - Total sekarang {total_baru}")
     except Exception as e: print(f"[WELCOME GAGAL] {e}")
 
 @bot.message_handler(commands=['cekgrup'])
@@ -95,6 +161,11 @@ def cek_grup(message):
 @bot.message_handler(commands=['id'])
 def cek_id(message):
     bot.send_message(message.chat.id, f"ID chat ini : `{message.chat.id}`\nID lu : `{message.from_user.id}`", parse_mode="Markdown")
+
+@bot.message_handler(commands=['total'])
+def cek_total(message):
+    if message.from_user.id != ADMIN_ID: return
+    bot.send_message(message.chat.id, f"👥 *TOTAL PELANGGAN BARU*\n━━━━━━━━━━━━━━━━━━\nTotal yang udah pernah /start : *{len(udah_welcome)} orang*\n━━━━━━━━━━━━━━━━━━\nMakin rame bang! 🔥", parse_mode="Markdown")
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -243,5 +314,5 @@ def auto_promo_loop():
         kirim_promo(teks, foto=BANNER_URL)
 
 threading.Thread(target=auto_promo_loop, daemon=True).start()
-print("✅ ZUAN PANEL - 1 PESAN JALAN!")
+print("✅ ZUAN PANEL - TOTAL RAME JALAN!")
 bot.infinity_polling()

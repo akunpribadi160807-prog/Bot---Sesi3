@@ -549,7 +549,7 @@ def detail_vps_kategori(call):
     markup.add(InlineKeyboardButton("⬅️ Kembali", callback_data="menu_vps"))
     bot.send_message(call.message.chat.id, teks, reply_markup=markup)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("vps_spec|") or call.data.startswith("vps_") and "vpskat_" not in call.data)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("vps_spec|") or (call.data.startswith("vps_") and len(call.data.split("_"))==3 and call.data.split("_")[2].isdigit()))
 def pilih_vps(call):
     if "|" in call.data:
         _, kat, idx = call.data.split("|")

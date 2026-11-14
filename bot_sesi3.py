@@ -607,7 +607,7 @@ def pilih_vps(call):
         pass
             # kirim notif ke grup langsung
     try:
-        bot.send_message(GROUP_PAYMENT, f"🔔 ORDER BARU VPS\n\n🆔 Order ID: {order_id}\n👤 User: @{call.from_user.username} ({call.from_user.id})\n📦 Produk: {spec}\n💰 Total: Rp {harga:,}\n\n⏳ Status: Menunggu Pembayaran")
+    bot.send_message(GROUP_PAYMENT, "🔔 ORDER BARU VPS\n\n🆔 Order ID: " + str(order_id) + "\n👤 User: @" + str(call.from_user.username) + "\n📦 Produk: VPS " + str(kat) + "\n💰 Total: Rp " + str(spec['harga']) + "\n\n⏳ Status: Menunggu Pembayaran")
     except Exception as e:
         print("Gagal kirim ke grup:", e)
     hapus_pesan(call.message.chat.id, call.message.message_id)

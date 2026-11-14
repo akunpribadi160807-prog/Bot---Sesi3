@@ -33,6 +33,44 @@ HARGA = {
     "10gb": {"nama": "Panel 10GB", "harga": 25000, "desc": "Buat yang butuh power lebih, dijamin anti lemot."},
     "unli": {"nama": "Panel UNLI", "harga": 50000, "desc": "Bebas tanpa batas, puas-puasin sampe bosen."},
 }
+VPS_KATEGORI = {
+    "LOW": {
+        "nama": "Paket VPS Hemat. Garansi 1 Hari",
+        "list": [
+            {"ram": "2GB", "cpu": "2 CPU", "ssd": "60GB SSD", "bw": "3TB BW", "harga": 3000},
+            {"ram": "4GB", "cpu": "2 CPU", "ssd": "80GB SSD", "bw": "4TB BW", "harga": 3000},
+            {"ram": "8GB", "cpu": "4 CPU", "ssd": "160GB SSD", "bw": "5TB BW", "harga": 3000},
+            {"ram": "16GB", "cpu": "2 CPU", "ssd": "50GB SSD", "bw": "4TB BW", "harga": 3000},
+        ]
+    },
+    "BASIC": {
+        "nama": "Paket VPS Standar. Garansi 3 Hari",
+        "list": [
+            {"ram": "2GB", "cpu": "2 CPU", "ssd": "60GB SSD", "bw": "3TB BW", "harga": 4000},
+            {"ram": "4GB", "cpu": "2 CPU", "ssd": "80GB SSD", "bw": "4TB BW", "harga": 4000},
+            {"ram": "8GB", "cpu": "4 CPU", "ssd": "160GB SSD", "bw": "5TB BW", "harga": 4000},
+            {"ram": "16GB", "cpu": "2 CPU", "ssd": "50GB SSD", "bw": "4TB BW", "harga": 4000},
+        ]
+    },
+    "MEDIUM": {
+        "nama": "Paket VPS Peforma Tinggi. Garansi 5 Hari",
+        "list": [
+            {"ram": "2GB", "cpu": "2 CPU", "ssd": "60GB SSD", "bw": "3TB BW", "harga": 5000},
+            {"ram": "4GB", "cpu": "2 CPU", "ssd": "80GB SSD", "bw": "4TB BW", "harga": 5000},
+            {"ram": "8GB", "cpu": "4 CPU", "ssd": "160GB SSD", "bw": "5TB BW", "harga": 5000},
+            {"ram": "16GB", "cpu": "2 CPU", "ssd": "50GB SSD", "bw": "4TB BW", "harga": 5000},
+        ]
+    },
+    "PREMIUM": {
+        "nama": "Paket VPS Peforma Ultra. Garansi 6 Hari",
+        "list": [
+            {"ram": "2GB", "cpu": "2 CPU", "ssd": "60GB SSD", "bw": "3TB BW", "harga": 6000},
+            {"ram": "4GB", "cpu": "2 CPU", "ssd": "80GB SSD", "bw": "4TB BW", "harga": 6000},
+            {"ram": "8GB", "cpu": "4 CPU", "ssd": "160GB SSD", "bw": "5TB BW", "harga": 6000},
+            {"ram": "16GB", "cpu": "2 CPU", "ssd": "50GB SSD", "bw": "4TB BW", "harga": 7000},
+        ]
+    },
+}
 orders = {}
 orders_by_id = {}
 
@@ -451,14 +489,6 @@ def auto_promo_loop():
 
 threading.Thread(target=auto_promo_loop, daemon=True).start()
 
-# === VPS - PILIH KATEGORI DULU, BARU SPEK ===
-VPS_KATEGORI = {
-    "low": {"nama": "LOW", "emoji": "🟢", "garansi": "30 Hari", "replace": "1x Replace selama masa garansi", "harga": 6000, "spek": "2GB RAM\n2 CPU\n60GB SSD\n3TB BW", "harga_usd": "$0.33"},
-    "basic": {"nama": "BASIC", "emoji": "💎", "garansi": "30 Hari", "replace": "1x Replace selama masa garansi", "harga": 8000, "spek": "4GB RAM\n2 CPU\n80GB SSD\n4TB BW", "harga_usd": "$0.44"},
-    "medium": {"nama": "MEDIUM", "emoji": "🟢", "garansi": "30 Hari", "replace": "2x Replace selama masa garansi", "harga": 10000, "spek": "8GB RAM\n4 CPU\n160GB SSD\n5TB BW", "harga_usd": "$0.55"},
-    "premium": {"nama": "PREMIUM", "emoji": "💎", "garansi": "30 Hari", "replace": "1x Replace selama masa garansi", "harga": 12000, "spek": "16GB RAM\n2 CPU\n50GB SSD\n4TB BW", "harga_usd": "$0.66"},
-}
-
 def kirim_vps_kategori(chat_id):
     teks = (
         f"🚀 *VPS DIGITALOCEAN*\n"
@@ -466,16 +496,16 @@ def kirim_vps_kategori(chat_id):
         f"🔒 Stok akan dicek lagi sebelum pembayaran.\n\n"
         f"📦 *PILIH PAKET*\n\n"
         f"🟢 *LOW*\n"
-        f"🛡️ Garansi: 30 Hari\n"
+        f"🛡️ Garansi: 1 Hari\n"
         f"🔄 Replace: 1x Replace selama masa garansi\n\n"
         f"💎 *BASIC*\n"
-        f"🛡️ Garansi: 30 Hari\n"
+        f"🛡️ Garansi: 3 Hari\n"
         f"🔄 Replace: 1x Replace selama masa garansi\n\n"
         f"🟢 *MEDIUM*\n"
-        f"🛡️ Garansi: 30 Hari\n"
+        f"🛡️ Garansi: 5 Hari\n"
         f"🔄 Replace: 2x Replace selama masa garansi\n\n"
         f"💎 *PREMIUM*\n"
-        f"🛡️ Garansi: 30 Hari\n"
+        f"🛡️ Garansi: 6 Hari\n"
         f"🔄 Replace: 1x Replace selama masa garansi\n\n"
         f"👇 Pilih paket untuk melihat spesifikasi dan harga.\n\n"
         f"📦 Total Stok Tersedia: 8 VPS\n"
@@ -493,34 +523,27 @@ def menu_vps(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("vpskat_"))
 def detail_vps_kategori(call):
-    kat = call.data.replace("vpskat_", "")
-    info = VPS_KATEGORI[kat]
-    teks = (
-        f"{info['emoji']} *VPS {info['nama']} - Peforma Ultra*\n"
-        f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"🖥 *SPESIFIKASI:*\n"
-        f"{info['spek']}\n"
-        f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"🛡️ Garansi: {info['garansi']}\n"
-        f"🔄 Replace: {info['replace']}\n"
-        f"💰 Harga: Rp {info['harga']:,} / {info['harga_usd']}\n"
-        f"━━━━━━━━━━━━━━━━━━━━\n\n"
-        f"✅ Stok Ready! Mau order yang ini kak?"
-    )
-    markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(f"🛒 Order VPS {info['nama']} - Rp {info['harga']:,}", callback_data=f"vps_order_{kat}"))
-    markup.add(InlineKeyboardButton("⬅️ Kembali Pilih Paket", callback_data="menu_vps"))
-    bot.send_message(call.message.chat.id, teks, parse_mode="Markdown", reply_markup=markup)
+    kat = call.data.replace("vpskat_", "", 1).upper()
+    data = VPS_KATEGORI[kat]
+    teks = f"{data['nama']}\n\n🖥 PILIH SPESIFIKASI VPS\n\n"
+    markup = InlineKeyboardMarkup(row_width=4)
+    for i, s in enumerate(data["list"], 1):
+        teks += f"━━━━━━━━━━━━━━\n[ {i} ] {s['ram']} RAM\n{s['cpu']}\n{s['ssd']}\n{s['bw']}\n└➡️ Rp {s['harga']:,}\n\n"
+        markup.add(InlineKeyboardButton(f"{i}", callback_data=f"vps_spec|{kat}|{i-1}"))
+    teks += "Silahkan pilih nomor spesifikasi."
+    markup.add(InlineKeyboardButton("⬅️ Kembali", callback_data="menu_vps"))
+    bot.send_message(call.message.chat.id, teks, reply_markup=markup)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("vps_order_"))
+@bot.callback_query_handler(func=lambda call: call.data.startswith("vps_spec|"))
 def pilih_vps(call):
-    kat = call.data.replace("vps_order_", "")
-    info = VPS_KATEGORI[kat]
+    _, kat, idx = call.data.split("|")
+    kat = kat.upper()
+    spec = VPS_KATEGORI[kat]["list"][int(idx)]
     data = load_data()
-    order_id = f"VPS{random.randint(1000,9999)}"
-    data[order_id] = {"user_id": call.from_user.id, "username": call.from_user.username, "jenis": "VPS", "paket": f"VPS {info['nama']} - {info['spek'].replace(chr(10), ' - ')}", "harga": info['harga'], "status": "menunggu_username"}
+    order_id = f"VPS{random.randint(1000, 9999)}"
+    data[order_id] = {"user_id": call.from_user.id, "username": call.from_user.username, "produk": f"VPS {kat} - {spec['ram']} RAM", "harga": spec['harga'], "status": "menunggu"}
     save_data(data)
-    bot.send_message(call.message.chat.id, f"✅ Kakak pilih *VPS {info['nama']} - Rp {info['harga']:,}*\n\nSilahkan kirim *Username VPS* yang kakak mau ya!\nContoh: `zuanvps`", parse_mode="Markdown")
+    bot.send_message(call.message.chat.id, f"✅ Order VPS Berhasil!\n\n📦 Produk: VPS {kat} - {spec['ram']} RAM\n{spec['cpu']}\n{spec['ssd']}\n{spec['bw']}\n💰 Harga: Rp {spec['harga']:,}\n🆔 Order ID: {order_id}\n\nSilahkan lakukan pembayaran!")
     hapus_pesan(call.message.chat.id, call.message.message_id)
 print("✅ ZUAN PANEL - FINAL ELEGAN JALAN!")
 bot.infinity_polling()

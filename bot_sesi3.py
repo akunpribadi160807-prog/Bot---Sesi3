@@ -552,7 +552,7 @@ def detail_vps_kategori(call):
     markup = InlineKeyboardMarkup(row_width=4)
     for i, s in enumerate(data["list"], 1):
         teks += f"━━━━━━━━━━━━━━\n[ {i} ] {s['ram']} RAM\n{s['cpu']}\n{s['ssd']}\n{s['bw']}\n└➡️ Rp {s['harga']:,}\n\n"
-        markup.add(InlineKeyboardButton(str(i+1), callback_data=f"vps_spec|{kat}|{i}"))
+        markup.add(InlineKeyboardButton(str(i), callback_data=f"vps_spec|{kat}|{i}"))
     teks += "Silahkan pilih nomor spesifikasi."
     markup.add(InlineKeyboardButton("⬅️ Kembali", callback_data="menu_vps"))
     bot.send_message(call.message.chat.id, teks, reply_markup=markup)
@@ -567,7 +567,7 @@ def pilih_vps(call):
         kat = parts[1]
         idx = parts[2]
     kat = kat.upper()
-    spec = VPS_KATEGORI[kat]["list"][int(idx)]
+    spec = VPS_KATEGORI[kat]["list"][int(idx)-1]
     order_id = f"VPS{random.randint(1000, 9999)}"
     data = load_data()
     data[order_id] = {

@@ -576,6 +576,8 @@ def pilih_vps(call):
         "email": "-",
         "status": "menunggu_bukti"
     }
+    orders[call.from_user.id] = {"order_id": order_id, "step": "menunggu_bukti", "paket": f"VPS {kat} - {spec['ram']}", "harga": spec['harga'], "status": "menunggu_bukti"}
+    orders_by_id[order_id] = orders[call.from_user.id]
     save_data(data)
     teks = (
         f"🧾 *INVOICE - ZUAN PANEL* 🧾\n"

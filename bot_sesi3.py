@@ -539,10 +539,7 @@ def pilih_vps(call):
     _, kat, idx = call.data.split("|")
     kat = kat.upper()
     spec = VPS_KATEGORI[kat]["list"][int(idx)]
-    data = load_data()
     order_id = f"VPS{random.randint(1000, 9999)}"
-    data[order_id] = {"user_id": call.from_user.id, "username": call.from_user.username, "produk": f"VPS {kat} - {spec['ram']} RAM", "harga": spec['harga'], "status": "menunggu"}
-    save_data(data)
     bot.send_message(call.message.chat.id, f"✅ Order VPS Berhasil!\n\n📦 Produk: VPS {kat} - {spec['ram']} RAM\n{spec['cpu']}\n{spec['ssd']}\n{spec['bw']}\n💰 Harga: Rp {spec['harga']:,}\n🆔 Order ID: {order_id}\n\nSilahkan lakukan pembayaran!")
     hapus_pesan(call.message.chat.id, call.message.message_id)
 print("✅ ZUAN PANEL - FINAL ELEGAN JALAN!")

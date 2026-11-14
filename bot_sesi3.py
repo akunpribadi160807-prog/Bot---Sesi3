@@ -529,14 +529,20 @@ def detail_vps_kategori(call):
     markup = InlineKeyboardMarkup(row_width=4)
     for i, s in enumerate(data["list"], 1):
         teks += f"━━━━━━━━━━━━━━\n[ {i} ] {s['ram']} RAM\n{s['cpu']}\n{s['ssd']}\n{s['bw']}\n└➡️ Rp {s['harga']:,}\n\n"
-        markup.add(InlineKeyboardButton(f"{i}", callback_data=f"vps_spec|{kat}|{i-1}"))
+        markup.add(InlineKeyboardButton(str(i+1), callback_data=f"vps_spec|{kat}|{i}"))
     teks += "Silahkan pilih nomor spesifikasi."
     markup.add(InlineKeyboardButton("⬅️ Kembali", callback_data="menu_vps"))
     bot.send_message(call.message.chat.id, teks, reply_markup=markup)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("vps_spec|"))
+@bot.callback_query_handler(func=lambda call: call.data.startswith("vps_spec|") or call.data.startswith("vps_") and "vpskat_" not in call.data)
 def pilih_vps(call):
-    _, kat, idx = call.data.split("|")
+    if "|" in call.data:
+        _, kat, idx = call.data.split("|")
+    else:
+        # buat kode lama kaya vps_LOW_0
+        parts = call.data.split("_")
+        kat = parts[1]
+        idx = parts[2]
     kat = kat.upper()
     spec = VPS_KATEGORI[kat]["list"][int(idx)]
     order_id = f"VPS{random.randint(1000, 9999)}"

@@ -168,6 +168,8 @@ def kirim_link_grup(chat_id):
         print(f"[LINK GRUP GAGAL] {e}")
         
 def kirim_welcome_testi(user):
+    if user.is_bot:
+        return
     if user.id in udah_welcome: return
     try:
         uname = f"@{user.username}" if user.username else "-"

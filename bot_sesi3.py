@@ -47,11 +47,19 @@ BANNER_URL = "https://i.ibb.co.com/v4XNy1Jv/IMG-20261109-WA0076.jpg"
 QRIS_STATIS_URL = "https://i.ibb.co.com/HLnGJPGK/qr-ID1026639236524-14-11-26-1794643632-1794643632979.jpg"
 WELCOME_URL = "https://i.ibb.co.com/b5Jx4qPb/IMG-20261114-WA3337.jpg"
 
+# === HARGA PANEL - VERSI BRUTAL 1GB-10GB + UNLI ===
 HARGA = {
-    "1gb": {"nama": "Panel 1GB", "harga": 5000, "desc": "Ringan, hemat, buat yang baru mulai cobain."},
-    "5gb": {"nama": "Panel 5GB", "harga": 15000, "desc": "Ini sih yang paling laris, udah paling pas buat harian."},
-    "10gb": {"nama": "Panel 10GB", "harga": 25000, "desc": "Buat yang butuh power lebih, dijamin anti lemot."},
-    "unli": {"nama": "Panel UNLI", "harga": 50000, "desc": "Bebas tanpa batas, puas-puasin sampe bosen."},
+    "1gb": {"nama": "Panel 1GB", "harga": 4000, "desc": "╔════════════════════╗\n  ⚡ PANEL 1GB ⚡\n  ▓ STARTER PACK ▓\n╚════════════════════╝\n\n➤ Start yang paling pas.\n➤ Ringan, ngebut, dan hemat.\n➤ Buat lu yang mau mulai tanpa ribet.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "2gb": {"nama": "Panel 2GB", "harga": 6000, "desc": "╔════════════════════╗\n  🚀 PANEL 2GB 🚀\n  ▓ NEXT LEVEL ▓\n╚════════════════════╝\n\n➤ Naik satu level.\n➤ Lebih lega, lebih stabil.\n➤ Buat yang udah mulai serius.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "3gb": {"nama": "Panel 3GB", "harga": 8000, "desc": "╔════════════════════╗\n  🔥 PANEL 3GB 🔥\n  ▓ RISING STAR ▓\n╚════════════════════╝\n\n➤ Udah bukan coba-coba lagi.\n➤ Performa mulai kerasa beda.\n➤ Smooth buat harian.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "4gb": {"nama": "Panel 4GB", "harga": 10000, "desc": "╔════════════════════╗\n  ★ PANEL 4GB ★\n  ▓ BEST SELLER ▓\n╚════════════════════╝\n\n➤ Sweet spot nya anak server.\n➤ Kenceng, tapi tetep irit.\n➤ Ini yang paling banyak dipilih!\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "5gb": {"nama": "Panel 5GB", "harga": 12000, "desc": "╔════════════════════╗\n  💣 PANEL 5GB 💣\n  ▓ HEAVY DUTY ▓\n╚════════════════════╝\n\n➤ Buat yang ga mau nanggung.\n➤ Ruang lebih besar, loading sat-set.\n➤ Udah siap tempur.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "6gb": {"nama": "Panel 6GB", "harga": 14000, "desc": "╔════════════════════╗\n  ⚔️ PANEL 6GB ⚔️\n  ▓ WAR MACHINE ▓\n╚════════════════════╝\n\n➤ Kelas menengah rasa sultan.\n➤ Libas banyak hal tanpa ngelag.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "7gb": {"nama": "Panel 7GB", "harga": 16000, "desc": "╔════════════════════╗\n  🛡️ PANEL 7GB 🛡️\n  ▓ ELITE CLASS ▓\n╚════════════════════╝\n\n➤ Performa udah solid banget.\n➤ Buat yang butuh power ekstra.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "8gb": {"nama": "Panel 8GB", "harga": 18000, "desc": "╔════════════════════╗\n  💎 PANEL 8GB 💎\n  ▓ PRO SERIES ▓\n╚════════════════════╝\n\n➤ Power udah beda kelas.\n➤ Buat project berat, ini baru enak.\n➤ Udah kaya punya server pribadi.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "9gb": {"nama": "Panel 9GB", "harga": 20000, "desc": "╔════════════════════╗\n  👾 PANEL 9GB 👾\n  ▓ ALMOST GOD ▓\n╚════════════════════╝\n\n➤ Tinggal selangkah lagi ke puncak.\n➤ Semua dilibas, ga ada kata lemot.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "10gb": {"nama": "Panel 10GB", "harga": 22000, "desc": "╔════════════════════╗\n  🔱 PANEL 10GB 🔱\n  ▓ GOD MODE ▓\n╚════════════════════╝\n\n➤ Hampir tanpa batas.\n➤ Performa udah ga masuk akal.\n➤ Udah kaya punya server pribadi.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"},
+    "unli": {"nama": "Panel UNLI", "harga": 25000, "desc": "╔════════════════════════╗\n  👑 PANEL UNLIMITED 👑\n  ▓ NO LIMIT EDITION ▓\n╚════════════════════════╝\n\n➤ Ini kasta tertinggi.\n➤ No limit, no drama.\n➤ Lu bebas mau ngapain aja.\n➤ Raja nya semua panel.\n\n╔═ USERNAME PANEL ═╗\n  ✎ Contoh: zuanpw\n╚══════════════════╝\n👉 Ketik username yang lu mau:"}
 }
 VPS_KATEGORI = {
     "LOW": {

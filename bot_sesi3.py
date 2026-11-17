@@ -230,7 +230,28 @@ def start(message):
     kirim_welcome_testi(message.from_user)
     nama = message.from_user.first_name or "Kak"
     stiker(message.chat.id, "👑")
-    caption = f"✨ *Halo, {nama}!* ✨\nSelamat datang di *ZUAN PANEL* 🤍\n\nDisini semua serba otomatis, jadi kakak tidak perlu menunggu lama.\n\n╭ ──── *ZUAN PANEL* ──── ╮\n│ 👑 Owner : {NAMA_BISNIS}\n│ 🤖 Bot : Auto Order 24 Jam\n│ 💎 Garansi : Full Garansi\n╰ ───────────────── ╯\n\nYuk pilih menu dibawah, kakak mau order yang mana? 😊"
+    caption = f"""╔══════════════════╗
+  ✨ 𝕎𝔼𝕃ℂ𝕆𝕄𝔼 𝕋𝕆 ✨
+╚══════════════════╝
+
+ℤU𝔸ℕ ℙ𝔸ℕ𝔼𝕃
+𝔸U𝕋𝕆 𝕆ℝ𝔻𝔼ℝ 𝟚𝟜 𝕁𝔸𝕄
+━━━━━━━━━━━━━━━━━━
+
+👋 ℍ𝕒𝕝𝕠, {nama}!
+𝕊𝕖𝕝𝕒𝕞𝕒𝕥 𝕕𝕒𝕥𝕒𝕟𝕘 𝕕𝕚 ℤU𝔸ℕ ℙ𝔸ℕ𝔼𝕃 🤍
+
+𝔻𝕚𝕤𝕚𝕟𝕚 𝕤𝕖𝕞𝕦𝕒 𝕤𝕖𝕣𝕓𝕒 𝕠𝕥𝕠𝕞𝕒𝕥𝕚𝕤,
+𝕛𝕒𝕕𝕚 𝕜𝕒𝕜𝕒𝕜 𝕥𝕚𝕕𝕒𝕜 𝕡𝕖𝕣𝕝𝕦 𝕞𝕖𝕟𝕦𝕟𝕘𝕘𝕦 𝕝𝕒𝕞𝕒.
+
+━━━━━━━━━━━━━━━━━━
+👑 𝕆𝕨𝕟𝕖𝕣 : @ShanXPLD
+🤖 𝔹𝕠𝕥 : 𝔸U𝕋𝕆 𝕆ℝ𝔻𝔼ℝ 𝟚𝟜 𝕁𝔸𝕄
+💎 𝔾𝕒𝕣𝕒𝕟𝕤𝕚 : 𝔽U𝕃𝕃 𝔾𝕒𝕣𝕒𝕟𝕤𝕚
+━━━━━━━━━━━━━━━━━━
+
+𝕐𝕦𝕜 𝕡𝕚𝕝𝕚𝕙 𝕞𝕖𝕟𝕦 𝕕𝕚𝕓𝕒𝕨𝕒𝕙,
+𝕜𝕒𝕜𝕒𝕜 𝕞𝕒𝕦 𝕠𝕣𝕕𝕖𝕣 𝕪𝕒𝕟𝕘 𝕞𝕒𝕟𝕒? 👇"""
     markup = InlineKeyboardMarkup(row_width=2)
     markup.add(InlineKeyboardButton("🛒  Order Panel", callback_data="menu_order"), InlineKeyboardButton("💳  Top Up Saldo", callback_data="menu_topup"))
     markup.add(InlineKeyboardButton("📦  Cek Stok", callback_data="menu_stok"), InlineKeyboardButton("💬  Hubungi Admin", url="https://t.me/zuanww"))
@@ -240,7 +261,7 @@ def start(message):
         img = requests.get(BANNER_URL, timeout=20).content
         bot.send_photo(message.chat.id, BytesIO(img), caption=caption, parse_mode="Markdown", reply_markup=markup)
     except: bot.send_message(message.chat.id, caption, parse_mode="Markdown", reply_markup=markup)
-
+        
 @bot.callback_query_handler(func=lambda c: c.data == "menu_order")
 def menu_order(call):
     hapus_pesan_lama(call.message.chat.id, call.message.message_id)
@@ -414,13 +435,13 @@ def handle_verif_admin(call):
             markup.add(InlineKeyboardButton("🔄  Kirim Ulang Bukti Yang Benar", callback_data=f"bayar_{order_id}"))
             markup.add(InlineKeyboardButton("💬  Chat Admin, Aku Bingung", url="https://t.me/zuanww"))
             bot.send_message(user_chat_id,
-                f"Maaf banget ya kak, aku jadi gak enak nih 🙏🥺\n\n"
+                f"Maaf banget ya kak, aku jadi gak enak nih 🙏\n\n"
                 f"Barusan bukti TF kakak udah kami cek foto nya satu-satu, tapi kayaknya ada yang kurang pas kak.\n\n"
                 f"Di sistem kami yang ke-daftar cuma 2 nama ini kak:\n\n"
                 f"🏪 *{NAMA_BISNIS}*\n"
                 f"👑 *{NAMA_REKENING}*\n\n"
                 f"Takutnya kakak salah transfer ke toko lain, atau salah kirim bukti punya orang lain, atau nominalnya kurang pas.\n"
-                f"Sayang banget kan kalo uang kakak nyangkut di tempat lain? 😢\n\n"
+                f"Sayang banget kan kalo uang kakak nyangkut di tempat lain? \n\n"
                 f"Boleh tolong cek lagi gak kak? Coba liat lagi di bukti transfer kakak:\n"
                 f"• Atas namanya udah bener *{NAMA_BISNIS}* / *{NAMA_REKENING}* belum?\n"
                 f"• Nominalnya udah pas belum?\n"
@@ -441,19 +462,19 @@ def handle_izin_testi(call):
     foto_id = data.get("foto_bukti_id")
     uname = data.get("uname_tele", "-")
     if jawaban == "ya":
-        caption_testi_bukti = f"✅ *TESTI BARU MASUK!* 💎\n━━━━━━━━━━━━━━━━━━\n📦 Paket : {data['paket_nama']}\n👤 Customer : {uname}\n💰 Total : Rp {data['harga']:,}".replace(",", ".") + f"\n━━━━━━━━━━━━━━━━━━\n\n📸 *BUKTI TRANSFER ASLI!*\nSudah diizinkan sama customernya langsung! 🤍\nMakasih sudah order di *ZUAN PANEL!*\n\nYuk yang belum order, gas nyusul! 🔥"
+        caption_testi_bukti = f"╔══════════════════╗\n  💎 𝓣𝓔𝓢𝓣𝓘 𝓑𝓐𝓡𝓤 𝓜𝓐𝓢𝓤𝓚 👑\n╚══════════════════╝\n\n📦 𝓟𝓪𝓴𝓮𝓽 : {data['paket_nama']}\n👤 𝓒𝓾𝓼𝓽𝓸𝓶𝓮𝓻 : {uname}\n💰 𝓣𝓸𝓽𝓪𝓵 : Rp {data['harga']:,}".replace(",", ".") + f"\n━━━━━━━━━━━━━━━━━━\n\n📸 *𝓑𝓤𝓚𝓣𝓘 𝓣𝓡𝓐𝓝𝓢𝓕𝓔𝓡 𝓐𝓢𝓛𝓘 & 𝓥𝓐𝓛𝓘𝓓!*\n𝓢𝓾𝓭𝓪𝓱 𝓭𝓲𝓲𝔃𝓲𝓷𝓴𝓪𝓷 𝓵𝓪𝓷𝓰𝓼𝓾𝓷𝓰 𝓸𝓵𝓮𝓱 𝓬𝓾𝓼𝓽𝓸𝓶𝓮𝓻𝓷𝔂𝓪! 🤍\n\n𝓣𝓮𝓻𝓲𝓶𝓪 𝓴𝓪𝓼𝓲𝓱 𝓼𝓾𝓭𝓪𝓱 𝓶𝓮𝓶𝓹𝓮𝓻𝓬𝓪𝔂𝓪𝓴𝓪𝓷 𝓸𝓻𝓭𝓮𝓻 𝓭𝓲 *𝓩𝓤𝓐𝓝 𝓟𝓐𝓝𝓔𝓛!*\n𝓐𝓶𝓪𝓷𝓪𝓱, 𝓒𝓮𝓹𝓪𝓽 & 𝓣𝓮𝓻𝓹𝓮𝓻𝓬𝓪𝔂𝓪! 💎\n\n𝓨𝓾𝓴 𝔂𝓪𝓷𝓰 𝓫𝓮𝓵𝓾𝓶 𝓸𝓻𝓭𝓮𝓻, 𝓰𝓪𝓼 𝓷𝔂𝓾𝓼𝓾𝓵! ✨\n𝓢𝓵𝓸𝓽 𝓽𝓮𝓻𝓫𝓪𝓽𝓪𝓼 𝓼𝓮𝓽𝓲𝓪𝓹 𝓱𝓪𝓻𝓲! 👑"
         try: bot.send_photo(GROUP_TESTI, foto_id, caption=caption_testi_bukti, parse_mode="Markdown")
         except Exception as e: print(f"[BUKTI TESTI GAGAL] {e}")
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton("🔍  Cek Status Pembayaran", callback_data=f"cek_{order_id}"))
-        bot.send_message(call.message.chat.id, f"Wihh makasih banyak kak! 🥹🤍\n\nBerkat izin kakak, pelanggan lain jadi makin yakin order di sini!\n\nKakak emang the best, semoga sehat selalu dan rezekinya lancar terus ya kak! 🔥\n\nTinggal tunggu admin cek mutasi ya, sebentar lagi jadi kok! ✨", parse_mode="Markdown", reply_markup=markup)
+        bot.send_message(call.message.chat.id, f"╔══════════════════╗\n  👑 𝓣𝓔𝓡𝓘𝓜𝓐 𝓚𝓐𝓢𝓘𝓗 👑\n╚══════════════════╝\n\n𝓣𝓮𝓻𝓲𝓶𝓪 𝓴𝓪𝓼𝓲𝓱 𝓫𝓪𝓷𝔂𝓪𝓴 𝓴𝓪𝓴! 🤍\n\n𝓑𝓮𝓻𝓴𝓪𝓽 𝓲𝔃𝓲𝓷 𝓴𝓪𝓴𝓪𝓴, 𝓹𝓮𝓵𝓪𝓷𝓰𝓰𝓪𝓷 𝓵𝓪𝓲𝓷 𝓳𝓪𝓭𝓲 𝓶𝓪𝓴𝓲𝓷 𝔂𝓪𝓴𝓲𝓷 𝓭𝓪𝓷 𝓶𝓪𝓴𝓲𝓷 𝓹𝓮𝓻𝓬𝓪𝔂𝓪 𝓸𝓻𝓭𝓮𝓻 𝓭𝓲 *𝓩𝓤𝓐𝓝 𝓟𝓐𝓝𝓔𝓛!*\n\n𝓚𝓪𝓴𝓪𝓴 𝓮𝓶𝓪𝓷𝓰 𝓽𝓱𝓮 𝓫𝓮𝓼𝓽, 𝓵𝓾𝓪𝓻 𝓫𝓲𝓪𝓼𝓪 𝓫𝓪𝓲𝓴𝓷𝔂𝓪! 👑\n𝓢𝓮𝓶𝓸𝓰𝓪 𝓼𝓮𝓱𝓪𝓽 𝓼𝓮𝓵𝓪𝓵𝓾, 𝓭𝓲𝓵𝓪𝓷𝓬𝓪𝓻𝓴𝓪𝓷 𝓼𝓮𝓶𝓾𝓪 𝓾𝓻𝓾𝓼𝓪𝓷𝓷𝔂𝓪, 𝓭𝓪𝓷 𝓻𝓮𝔃𝓮𝓴𝓲𝓷𝔂𝓪 𝓶𝓪𝓴𝓲𝓷 𝓭𝓮𝓻𝓪𝓼 𝓽𝓮𝓻𝓾𝓼 𝔂𝓪 𝓴𝓪𝓴! 💎\n\n━━━━━━━━━━━━━━━━━━\n⏳ 𝓣𝓲𝓷𝓰𝓰𝓪𝓵 𝓽𝓾𝓷𝓰𝓰𝓾 𝓪𝓭𝓶𝓲𝓷 𝓬𝓮𝓴 𝓶𝓾𝓽𝓪𝓼𝓲 𝔂𝓪 𝓴𝓪𝓴,\n𝓼𝓮𝓫𝓮𝓷𝓽𝓪𝓻 𝓵𝓪𝓰𝓲 𝓹𝓮𝓼𝓪𝓷𝓪𝓷 𝓴𝓪𝓴𝓪𝓴 𝓵𝓪𝓷𝓰𝓼𝓾𝓷𝓰 𝓭𝓲𝓹𝓻𝓸𝓼𝓮𝓼! 🚀\n━━━━━━━━━━━━━━━━━━\n\n𝓣𝓮𝓻𝓲𝓶𝓪 𝓴𝓪𝓼𝓲𝓱 𝓼𝓾𝓭𝓪𝓱 𝓳𝓪𝓭𝓲 𝓫𝓪𝓰𝓲𝓪𝓷 𝓭𝓪𝓻𝓲 𝓴𝓮𝓵𝓾𝓪𝓻𝓰𝓪 *𝓩𝓤𝓐𝓝 𝓟𝓐𝓝𝓔𝓛!* ✨", parse_mode="Markdown", reply_markup=markup)
         bot.answer_callback_query(call.id, "Makasih sudah izinin! 🤍")
     else:
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton("🔍  Cek Status Pembayaran", callback_data=f"cek_{order_id}"))
-        bot.send_message(call.message.chat.id, f"Siapp, aman kak! 🤍\n\nTenang saja, bukti TF kakak *TIDAK AKAN* kami sebarkan kemana-mana kok.\nHanya admin saja yang melihat untuk cek mutasi.\n\nPrivasi kakak nomor 1 di sini! 🫶\n\nTinggal tunggu admin cek ya, sebentar lagi jadi kok! ✨", parse_mode="Markdown", reply_markup=markup)
+        bot.send_message(call.message.chat.id, f"╔══════════════════╗\n  🤍 𝓟𝓡𝓘𝓥𝓐𝓢𝓘 𝓐𝓜𝓐𝓝 🤍\n╚══════════════════╝\n\n𝓢𝓲𝓪𝓹𝓹, 𝓪𝓶𝓪𝓷 100% 𝓴𝓪𝓴! 👑\n\n𝓣𝓮𝓷𝓪𝓷𝓰 𝓼𝓪𝓳𝓪, 𝓫𝓾𝓴𝓽𝓲 𝓣𝓕 𝓴𝓪𝓴𝓪𝓴 *𝓣𝓘𝓓𝓐𝓚 𝓐𝓚𝓐𝓝* 𝓴𝓪𝓶𝓲 𝓼𝓮𝓫𝓪𝓻𝓴𝓪𝓷 𝓴𝓮𝓶𝓪𝓷𝓪-𝓶𝓪𝓷𝓪 𝓴𝓸𝓴.\n𝓗𝓪𝓷𝔂𝓪 𝓪𝓭𝓶𝓲𝓷 𝓼𝓪𝓳𝓪 𝔂𝓪𝓷𝓰 𝓶𝓮𝓵𝓲𝓱𝓪𝓽 𝓾𝓷𝓽𝓾𝓴 𝓬𝓮𝓴 𝓶𝓾𝓽𝓪𝓼𝓲, 𝓽𝓲𝓭𝓪𝓴 𝓪𝓭𝓪 𝓸𝓻𝓪𝓷𝓰 𝓵𝓪𝓲𝓷 𝔂𝓪𝓷𝓰 𝓽𝓪𝓾.\n\n𝓟𝓻𝓲𝓿𝓪𝓼𝓲 𝓴𝓪𝓴𝓪𝓴 𝓪𝓭𝓪𝓵𝓪𝓱 𝓹𝓻𝓲𝓸𝓻𝓲𝓽𝓪𝓼 𝓷𝓸𝓶𝓸𝓻 1 𝓭𝓲 𝓼𝓲𝓷𝓲! 💎\n𝓚𝓪𝓶𝓲 𝓳𝓪𝓰𝓪 𝓪𝓶𝓪𝓷𝓪𝓱 𝓴𝓪𝓴𝓪𝓴 𝓭𝓮𝓷𝓰𝓪𝓷 𝓼𝓮𝓫𝓪𝓲𝓴-𝓫𝓪𝓲𝓴𝓷𝔂𝓪! 🤍\n\n━━━━━━━━━━━━━━━━━━\n⏳ 𝓣𝓲𝓷𝓰𝓰𝓪𝓵 𝓽𝓾𝓷𝓰𝓰𝓾 𝓪𝓭𝓶𝓲𝓷 𝓬𝓮𝓴 𝔂𝓪 𝓴𝓪𝓴,\n𝓼𝓮𝓫𝓮𝓷𝓽𝓪𝓻 𝓵𝓪𝓰𝓲 𝓳𝓪𝓭𝓲 𝓴𝓸𝓴! ✨\n━━━━━━━━━━━━━━━━━━\n\n𝓣𝓮𝓻𝓲𝓶𝓪 𝓴𝓪𝓼𝓲𝓱 𝓼𝓾𝓭𝓪𝓱 𝓶𝓮𝓶𝓹𝓮𝓻𝓬𝓪𝔂𝓪𝓴𝓪𝓷 𝓸𝓻𝓭𝓮𝓻 𝓭𝓲 *𝓩𝓤𝓐𝓝 𝓟𝓐𝓝𝓔𝓛!* 👑", parse_mode="Markdown", reply_markup=markup)
         bot.answer_callback_query(call.id, "Siap, privasi aman! 🤍")
-
+        
 @bot.callback_query_handler(func=lambda c: c.data.startswith("cek_") or c.data.startswith("bayar_") or c.data.startswith("batal_"))
 def handle_cek_batal(call):
     if call.data.startswith("cek_"):
